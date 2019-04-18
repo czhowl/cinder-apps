@@ -19,8 +19,50 @@
 		11378E215BA04A90B2B1D33C /* chenleeApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC8A2996B7584B6CBE6F2015 /* chenleeApp.cpp */; };
 		1A11DB5F278A4A10976BD19A /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 839AB4CBB98D40978D7C7199 /* CinderApp.icns */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
+		5C636B1E22677C2400E924DC /* librealsense2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1A22677C2300E924DC /* librealsense2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5C636B1F22677C2400E924DC /* librealsense2.2.20.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1B22677C2400E924DC /* librealsense2.2.20.0.dylib */; };
+		5C636B2022677C2400E924DC /* librealsense2.2.20.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1C22677C2400E924DC /* librealsense2.2.20.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5C636B2122677C2400E924DC /* libusb-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1D22677C2400E924DC /* libusb-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5C636B2522677C3300E924DC /* librealsense2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C636B1A22677C2300E924DC /* librealsense2.dylib */; };
+		5C636B2622677C3300E924DC /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C636B1D22677C2400E924DC /* libusb-1.0.0.dylib */; };
+		5C636B2722677DD000E924DC /* librealsense2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1A22677C2300E924DC /* librealsense2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5C636B2922677DD300E924DC /* libusb-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1D22677C2400E924DC /* libusb-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5C636B2A22677DD500E924DC /* librealsense2.2.20.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1B22677C2400E924DC /* librealsense2.2.20.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5C636B2B22677DD800E924DC /* librealsense2.2.20.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1C22677C2400E924DC /* librealsense2.2.20.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5C8196922266B13400DA70A9 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5C8196912266B13400DA70A9 /* assets */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5C636B2222677C2400E924DC /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				5C636B1E22677C2400E924DC /* librealsense2.dylib in Embed Libraries */,
+				5C636B1F22677C2400E924DC /* librealsense2.2.20.0.dylib in Embed Libraries */,
+				5C636B2022677C2400E924DC /* librealsense2.2.20.dylib in Embed Libraries */,
+				5C636B2122677C2400E924DC /* libusb-1.0.0.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5C636B2822677DD000E924DC /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				5C636B2722677DD000E924DC /* librealsense2.dylib in Embed Libraries */,
+				5C636B2B22677DD800E924DC /* librealsense2.2.20.dylib in Embed Libraries */,
+				5C636B2922677DD300E924DC /* libusb-1.0.0.dylib in Embed Libraries */,
+				5C636B2A22677DD500E924DC /* librealsense2.2.20.0.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		006D720219952D00008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -37,7 +79,12 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
+		5C636B1A22677C2300E924DC /* librealsense2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = librealsense2.dylib; sourceTree = "<group>"; };
+		5C636B1B22677C2400E924DC /* librealsense2.2.20.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = librealsense2.2.20.0.dylib; sourceTree = "<group>"; };
+		5C636B1C22677C2400E924DC /* librealsense2.2.20.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = librealsense2.2.20.dylib; sourceTree = "<group>"; };
+		5C636B1D22677C2400E924DC /* libusb-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libusb-1.0.0.dylib"; sourceTree = "<group>"; };
 		5C81968922652B6300DA70A9 /* Particle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
+		5C8196912266B13400DA70A9 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		839AB4CBB98D40978D7C7199 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* chenlee.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chenlee.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A364EF80B0AD47068A7CBF93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -54,6 +101,8 @@
 				006D720519952D00008149E2 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
+				5C636B2522677C3300E924DC /* librealsense2.dylib in Frameworks */,
+				5C636B2622677C3300E924DC /* libusb-1.0.0.dylib in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
 				00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */,
 				00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */,
@@ -79,6 +128,7 @@
 			children = (
 				EC8A2996B7584B6CBE6F2015 /* chenleeApp.cpp */,
 				5C81968922652B6300DA70A9 /* Particle.h */,
+				5C8196912266B13400DA70A9 /* assets */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -121,6 +171,10 @@
 		29B97314FDCFA39411CA2CEA /* chenlee */ = {
 			isa = PBXGroup;
 			children = (
+				5C636B1B22677C2400E924DC /* librealsense2.2.20.0.dylib */,
+				5C636B1C22677C2400E924DC /* librealsense2.2.20.dylib */,
+				5C636B1A22677C2300E924DC /* librealsense2.dylib */,
+				5C636B1D22677C2400E924DC /* libusb-1.0.0.dylib */,
 				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
@@ -168,6 +222,8 @@
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
+				5C636B2222677C2400E924DC /* Embed Libraries */,
+				5C636B2822677DD000E924DC /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -211,6 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A11DB5F278A4A10976BD19A /* CinderApp.icns in Resources */,
+				5C8196922266B13400DA70A9 /* assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,6 +303,13 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					/Users/howlchen/Documents/source/librealsense/build,
+					/usr/local/Cellar/libusb/1.0.22/lib,
+					"/Users/howlchen/Documents/source/cinder-apps/chenlee/xcode",
+				);
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = chenlee;
@@ -273,6 +337,13 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					/Users/howlchen/Documents/source/librealsense/build,
+					/usr/local/Cellar/libusb/1.0.22/lib,
+					"/Users/howlchen/Documents/source/cinder-apps/chenlee/xcode",
+				);
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = chenlee;
@@ -292,7 +363,14 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/include\"",
+					/Users/howlchen/Documents/source/librealsense/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/Users/howlchen/Documents/source/librealsense/build,
+					"/Users/howlchen/Documents/source/cinder-apps/chenlee/xcode",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -309,7 +387,14 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/include\"",
+					/Users/howlchen/Documents/source/librealsense/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/Users/howlchen/Documents/source/librealsense/build,
+					"/Users/howlchen/Documents/source/cinder-apps/chenlee/xcode",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";

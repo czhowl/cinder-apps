@@ -629,5 +629,22 @@ dependencies: \
   ../../../Cinder-0.9.2/include/cinder/Camera.h \
   ../../../Cinder-0.9.2/include/cinder/app/MouseEvent.h \
   ../../../Cinder-0.9.2/include/cinder/app/Window.h \
+  ../../../Cinder-0.9.2/include/cinder/params/Params.h \
+  ../../../Cinder-0.9.2/include/cinder/Color.h \
+  ../../../Cinder-0.9.2/include/cinder/Quaternion.h \
+  ../../../Cinder-0.9.2/include/cinder/Signals.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/rs.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/h/rs_types.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/h/rs_context.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/h/rs_device.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/h/rs_sensor.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/h/rs_frame.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/h/rs_option.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/h/rs_processing.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/h/rs_record_playback.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/h/rs_pipeline.h \
+  /Users/howlchen/Documents/source/librealsense/include/librealsense2/h/rs_config.h \
   /Users/howlchen/Documents/source/cinder-apps/chenlee/xcode/Particle.h \
-  ../../../Cinder-0.9.2/include/cinder/Rand.h
+  ../../../Cinder-0.9.2/include/cinder/Rand.h \
+  ../../../Cinder-0.9.2/include/cinder/Perlin.h \
+  ../../../Cinder-0.9.2/include/cinder/Cinder.h
