@@ -33,7 +33,7 @@ private:
     params::InterfaceGlRef     mParams;
     
     gl::FboRef                 mFbo;
-    gl::FboRef                 mFboUI;
+    gl::FboRef                 mFboUI; 
     Font                     mFont;
     Font                     mFontUI;
     
