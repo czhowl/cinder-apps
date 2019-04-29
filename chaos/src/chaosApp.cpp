@@ -33,7 +33,7 @@ private:
     params::InterfaceGlRef     mParams;
     
     gl::FboRef                 mFbo;
-    gl::FboRef                 mFboUI; 
+    gl::FboRef                 mFboUI;
     Font                     mFont;
     Font                     mFontUI;
     
@@ -48,12 +48,15 @@ private:
     vec3                    indicationPos;
     Rectf                   loadingBar;
     Rectf                   resultBar;
+    
+    float                   timer;
 };
 
 // #################################################################################
 
 void ChaosApp::setup()
 {
+    timer = 0;
     mPerlin.setSeed(clock());
     camAngle = 0;
     equation = true;
@@ -117,6 +120,7 @@ void ChaosApp::keyDown(KeyEvent event)
 
 void ChaosApp::update()
 {
+    timer = getElapsedSeconds();
     //float n = mPerlin.fBm(getElapsedSeconds());
     //console() << n * 20 << endl;
     camAngle += 0.5 * pow(lmap(r, 0.1f, 5.0f, 0.0f, 5.0f), 2);
