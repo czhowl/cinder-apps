@@ -16,12 +16,11 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
+		356F62AF5F1F41408F0C75CD /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3FD33CCB6CCA41309D7FDBD7 /* CinderApp.icns */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
+		5C3D08A72269564C00542264 /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D08A62269564C00542264 /* Particle.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		0ABC4158232242AF8E30D55B /* chaos_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 02FF1FDDD5704900B514434B /* chaos_Prefix.pch */; };
-		3F85400F908D455885F4A8FC /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 019816E6F2344C63B0A28FAD /* CinderApp.icns */; };
-		30D641473DA24EAE9D47EA93 /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = 35A8A87C60134E1FA633AFD5 /* Resources.h */; };
-		621CE32B5C4D4E799A6D9514 /* chaosApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03907DEDEC0841DE9339D284 /* chaosApp.cpp */; };
+		9B872345A9D6448889F008AF /* ChaosApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CE7E76D3A844FF0A70DEC7B /* ChaosApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,13 +36,15 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		3FD33CCB6CCA41309D7FDBD7 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		459A3803913B4B409B8A6368 /* Chaos_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Chaos_Prefix.pch; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
-		8D1107320486CEB800E47090 /* chaos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chaos.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		03907DEDEC0841DE9339D284 /* chaosApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/chaosApp.cpp; sourceTree = "<group>"; name = chaosApp.cpp; };
-		35A8A87C60134E1FA633AFD5 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		019816E6F2344C63B0A28FAD /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
-		E82C62808E46491993AAEBE0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
-		02FF1FDDD5704900B514434B /* chaos_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = chaos_Prefix.pch; sourceTree = "<group>"; name = chaos_Prefix.pch; };
+		5C3D08A52269563000542264 /* Particle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
+		5C3D08A62269564C00542264 /* Particle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Particle.cpp; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* Chaos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chaos.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		95362C349CC94253A33EDDAB /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
+		9CE7E76D3A844FF0A70DEC7B /* ChaosApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = ChaosApp.cpp; path = ../src/ChaosApp.cpp; sourceTree = "<group>"; };
+		C75142BCFF844A148EE13D3C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,10 +69,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		01B97315FEAEA392516A2CEA /* Blocks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Blocks;
+			sourceTree = "<group>";
+		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				03907DEDEC0841DE9339D284 /* chaosApp.cpp */,
+				5C3D08A62269564C00542264 /* Particle.cpp */,
+				9CE7E76D3A844FF0A70DEC7B /* ChaosApp.cpp */,
+				5C3D08A52269563000542264 /* Particle.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -106,12 +116,12 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* chaos.app */,
+				8D1107320486CEB800E47090 /* Chaos.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* chaos */ = {
+		29B97314FDCFA39411CA2CEA /* Chaos */ = {
 			isa = PBXGroup;
 			children = (
 				01B97315FEAEA392516A2CEA /* Blocks */,
@@ -121,21 +131,14 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
-			name = chaos;
-			sourceTree = "<group>";
-		};
-		01B97315FEAEA392516A2CEA /* Blocks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Blocks;
+			name = Chaos;
 			sourceTree = "<group>";
 		};
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				35A8A87C60134E1FA633AFD5 /* Resources.h */,
-				02FF1FDDD5704900B514434B /* chaos_Prefix.pch */,
+				95362C349CC94253A33EDDAB /* Resources.h */,
+				459A3803913B4B409B8A6368 /* Chaos_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -143,8 +146,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				019816E6F2344C63B0A28FAD /* CinderApp.icns */,
-				E82C62808E46491993AAEBE0 /* Info.plist */,
+				3FD33CCB6CCA41309D7FDBD7 /* CinderApp.icns */,
+				C75142BCFF844A148EE13D3C /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -161,9 +164,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* chaos */ = {
+		8D1107260486CEB800E47090 /* Chaos */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "chaos" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Chaos" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -173,10 +176,10 @@
 			);
 			dependencies = (
 			);
-			name = chaos;
+			name = Chaos;
 			productInstallPath = "$(HOME)/Applications";
-			productName = chaos;
-			productReference = 8D1107320486CEB800E47090 /* chaos.app */;
+			productName = Chaos;
+			productReference = 8D1107320486CEB800E47090 /* Chaos.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -184,7 +187,9 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "chaos" */;
+			attributes = {
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Chaos" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -194,11 +199,11 @@
 				French,
 				German,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* chaos */;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* Chaos */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1107260486CEB800E47090 /* chaos */,
+				8D1107260486CEB800E47090 /* Chaos */,
 			);
 		};
 /* End PBXProject section */
@@ -208,7 +213,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3F85400F908D455885F4A8FC /* CinderApp.icns in Resources */,
+				356F62AF5F1F41408F0C75CD /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,7 +224,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				621CE32B5C4D4E799A6D9514 /* chaosApp.cpp in Sources */,
+				9B872345A9D6448889F008AF /* ChaosApp.cpp in Sources */,
+				5C3D08A72269564C00542264 /* Particle.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,23 +236,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Chaos_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = chaos_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = chaos;
+				PRODUCT_NAME = Chaos;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
@@ -262,18 +268,18 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Chaos_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"NDEBUG=1",
 					"$(inherited)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = chaos_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = chaos;
+				PRODUCT_NAME = Chaos;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
@@ -317,7 +323,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "chaos" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Chaos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
@@ -326,7 +332,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "chaos" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Chaos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
