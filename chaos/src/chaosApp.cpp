@@ -19,6 +19,7 @@ class ChaosApp : public App {
 public:
     void    setup() override;
     void    mouseDown(MouseEvent event) override;
+    void    mouseDrag(MouseEvent event) override;
     void    update() override;
     void    draw() override;
     void    keyDown(KeyEvent event) override;
@@ -81,7 +82,7 @@ void ChaosApp::setup()
     const vec2 windowSize = toPixels(getWindowSize());
     mCamera = CameraPersp(windowSize.x, windowSize.y, 45.0f, 0.01f, 3000.0f);
     mCamera.lookAt(vec3(0.0f, 0.0f, 51.0f), vec3(0.0f, 0.0f, 10.0f));
-    mCamUi = CameraUi(&mCamera, getWindow());
+    mCamUi = CameraUi(&mCamera);
     
     gl::Fbo::Format fboFormat;
     fboFormat.setColorTextureFormat(gl::Texture2d::Format().internalFormat(GL_RGBA32F));
@@ -97,6 +98,13 @@ void ChaosApp::setup()
 
 void ChaosApp::mouseDown(MouseEvent event)
 {
+    console()<<event.getPos()<<endl;
+    mCamUi.mouseDown( event );
+}
+
+void ChaosApp::mouseDrag( MouseEvent event )
+{
+    mCamUi.mouseDrag( event );
 }
 
 // #################################################################################
@@ -120,6 +128,7 @@ void ChaosApp::keyDown(KeyEvent event)
 
 void ChaosApp::update()
 {
+   // console() << getmouse() << endl;
     timer = getElapsedSeconds();
     //float n = mPerlin.fBm(getElapsedSeconds());
     //console() << n * 20 << endl;
