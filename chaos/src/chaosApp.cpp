@@ -20,6 +20,7 @@ public:
     void    setup() override;
     void    mouseDown(MouseEvent event) override;
     void    mouseDrag(MouseEvent event) override;
+    void    mouseWheel(MouseEvent event) override;
     void    update() override;
     void    draw() override;
     void    keyDown(KeyEvent event) override;
@@ -49,7 +50,8 @@ private:
     vec3                    indicationPos;
     Rectf                   loadingBar;
     Rectf                   resultBar;
-    
+    gl::Texture2dRef        mPhiTex;
+    gl::Texture2dRef        mResumeTex;
     float                   timer;
 };
 
@@ -67,7 +69,10 @@ void ChaosApp::setup()
     pan = 0;
     loadingBar = Rectf(0.0f,0.0f,10.0f,10.0f);
     resultBar = Rectf(0.0f,0.0f,10.0f,10.0f);
-    
+    auto img = loadImage( loadAsset( "Phi.png" ) );
+    mPhiTex = gl::Texture2d::create( img );
+    img = loadImage( loadAsset( "resume.png" ) );
+    mResumeTex = gl::Texture2d::create( img );
     
     mParams = params::InterfaceGl::create(getWindow(), "App parameters", toPixels(ivec2(200, 200)));
     mParams->addParam( "Randomness", &r ).min( 0.1f ).max( 20.0f ).keyIncr( "q" ).keyDecr( "a" ).precision( 2 ).step( 0.01f );
@@ -99,6 +104,11 @@ void ChaosApp::setup()
 void ChaosApp::mouseDown(MouseEvent event)
 {
     console()<<event.getPos()<<endl;
+    float x = event.getPos().x;
+    float y = event.getPos().y;
+    if(x < getWindowWidth() / 2 + 25 && x > getWindowWidth() / 2 - 25 && y > getWindowHeight() - 50){
+        cout<< "clicked" <<endl;
+    }
     mCamUi.mouseDown( event );
 }
 
@@ -107,10 +117,15 @@ void ChaosApp::mouseDrag( MouseEvent event )
     mCamUi.mouseDrag( event );
 }
 
+void ChaosApp::mouseWheel( MouseEvent event )
+{
+    mCamUi.mouseWheel( event );
+}
+
 // #################################################################################
 
 void ChaosApp::keyDown(KeyEvent event)
-{
+{s
     if (event.getChar() == 'c') {
         gl::ScopedFramebuffer scpFbo(mFbo);
         gl::ScopedViewport    scpViewport(mFbo->getSize());
@@ -238,7 +253,9 @@ void ChaosApp::renderUI(){
          gl::drawString("AA " + to_string(2), mCamera.worldToScreen(end[2], getWindowWidth(), getWindowHeight()) - vec2(90, 20), Color::white(), mFontUI);
         pos[3] = mCamera.getEyePoint() + 5.0f *mCamera.getViewDirection() - right * textRight[3] * 2.0f + up * textUp[3] * 1.0f;
         end[3] = pos[3] - right * textRight[3] * 0.5f;
-        gl::drawString("Φ 3.244", mCamera.worldToScreen(end[3], getWindowWidth(), getWindowHeight()) - vec2(90, 20), Color::white(), mFontUI);
+        vec2 phiPos = mCamera.worldToScreen(end[3], getWindowWidth(), getWindowHeight());
+        gl::draw( mPhiTex, Rectf( phiPos.x - 110, phiPos.y - 20, phiPos.x - 110 + mPhiTex->getWidth()/1.5, phiPos.y - 20 + mPhiTex->getHeight()/1.5 ) );
+        gl::drawString(" 3.244", phiPos - vec2(90, 20), Color::white(), mFontUI);
         gl::drawStringCentered("SYSTEM IDENTIFIED", mCamera.worldToScreen(mCamera.getEyePoint() + 5.0f *mCamera.getViewDirection() + up * 1.9f, getWindowWidth(), getWindowHeight()), Color::white(), mFontUI);
         
         
@@ -252,7 +269,11 @@ void ChaosApp::renderUI(){
         gl::color(1.0f, 1.0f, 1.0f);
         gl::drawSolidRect(resultBar);
         gl::color(1.0f, 1.0f, 1.0f);
-         gl::drawStringCentered("PASS", mCamera.worldToScreen(mCamera.getEyePoint() + 5.0f *mCamera.getViewDirection() - up * 1.6f, getWindowWidth(), getWindowHeight()), Color::black(), mFontUI);
+        vec2 resumePos = mCamera.worldToScreen(mCamera.getEyePoint() + 5.0f *mCamera.getViewDirection() - up * 1.6f, getWindowWidth(), getWindowHeight());
+        gl::draw( mResumeTex, Rectf( resumePos.x - 10, resumePos.y + 50, resumePos.x - 10 + mResumeTex->getWidth()/1.2, resumePos.y + 50 + mResumeTex->getHeight()/1.2 ) );
+         gl::drawStringCentered("PASS", resumePos, Color::black(), mFontUI);
+        
+        
         
         
     }else{
@@ -272,8 +293,8 @@ void ChaosApp::renderUI(){
 // #################################################################################
 
 CINDER_APP(ChaosApp, RendererGl, [](App::Settings *settings) {
-    settings->setWindowSize(1280, 720);
-    //    settings->setFullScreen();
+    settings->setWindowSize(2880, 1800);
+        settings->setFullScreen();
     settings->setHighDensityDisplayEnabled( true );
     //    settings->setMultiTouchEnabled( false );
 })

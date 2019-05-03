@@ -14,6 +14,7 @@
 #include "cinder/Rand.h"
 #include "cinder/Perlin.h"
 
+
 namespace constant
 {
     constexpr float CONSTANT_A =  5.0f;
@@ -23,7 +24,7 @@ namespace constant
     constexpr float DELTA_TIME = 0.001f;
     constexpr float MULT_TIME = 1000.0f;
     constexpr int   num_params = 18;
-    constexpr int   PARTICLE_NUM = 200e3;
+    constexpr int   PARTICLE_NUM = 300e3;
 }
 
 
