@@ -1,0 +1,4 @@
+﻿  meshshaderApp.cpp
+..\src\meshshaderApp.cpp(99): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+  meshshader.vcxproj -> C:\Users\czhhz\source\cinder-apps\meshshader\vc2015\x64\Debug\meshshader.exe
+  meshshader.vcxproj -> C:\Users\czhhz\source\cinder-apps\meshshader\vc2015\x64\Debug\meshshader.pdb (Full PDB)
