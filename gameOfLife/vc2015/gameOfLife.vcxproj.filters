@@ -28,10 +28,27 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\pingPongBuffer.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\updateShader.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\assets\updateShader.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\assets\renderShader.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\assets\renderShader.vert">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

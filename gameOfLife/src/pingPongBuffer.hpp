@@ -12,7 +12,7 @@ public:
 		fmt.enableDepthBuffer(false);
 
 		// use a single channel (red) for the displacement map
-		fmt.setColorTextureFormat(ci::gl::Texture2d::Format().wrap(GL_CLAMP_TO_EDGE).internalFormat(_internalformat).minFilter(GL_NEAREST).magFilter(GL_NEAREST));
+		fmt.setColorTextureFormat(ci::gl::Texture2d::Format().internalFormat(_internalformat).minFilter(GL_NEAREST).magFilter(GL_NEAREST));
 		for (int i = 0; i < 2; i++) {
 			FBOs[i] = ci::gl::Fbo::create(_width, _height, fmt);
 		}
@@ -33,9 +33,9 @@ public:
 		}
 	}
 
-	ci::gl::FboRef& operator[](int n) { return FBOs[n]; }
-	ci::gl::FboRef   *src = &FBOs[0];       // Source       ->  Ping
-	ci::gl::FboRef   *dst = &FBOs[1];       // Destination  ->  Pong
+	ci::gl::FboRef operator[](int n) { return FBOs[n]; }
+	ci::gl::FboRef   src = FBOs[0];       // Source       ->  Ping
+	ci::gl::FboRef   dst = FBOs[1];       // Destination  ->  Pong
 
 private:
 	ci::gl::FboRef  FBOs[2];    // Real addresses of ping/pong FBO´s
