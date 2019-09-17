@@ -1,6 +1,6 @@
 ﻿  gameOfLifeApp.cpp
-..\src\gameOfLifeApp.cpp(50): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-..\src\gameOfLifeApp.cpp(142): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-..\src\gameOfLifeApp.cpp(143): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+..\src\gameOfLifeApp.cpp(59): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+..\src\gameOfLifeApp.cpp(195): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+..\src\gameOfLifeApp.cpp(202): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   gameOfLife.vcxproj -> C:\Users\czhhz\source\cinder-apps\gameOfLife\vc2015\x64\Debug\gameOfLife.exe
   gameOfLife.vcxproj -> C:\Users\czhhz\source\cinder-apps\gameOfLife\vc2015\x64\Debug\gameOfLife.pdb (Full PDB)

@@ -50,5 +50,11 @@
     <None Include="..\assets\renderShader.vert">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="..\assets\drawShader.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\assets\drawShader.frag">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -99,6 +99,8 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\assets\drawShader.frag" />
+    <None Include="..\assets\drawShader.vert" />
     <None Include="..\assets\updateShader.frag" />
     <None Include="..\assets\updateShader.vert" />
     <None Include="..\assets\renderShader.frag" />

@@ -12,17 +12,24 @@ class gameOfLifeApp : public App {
   public:
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
+	void mouseDrag(MouseEvent event) override;
+	void mouseWheel(MouseEvent event) override;
+	void mouseUp(MouseEvent event) override;
 	void update() override;
 	void draw() override;
 	void keyDown(KeyEvent event) override;
+	
+	static void prepare(App::Settings *settings);
 	void					forceShowCursor();
 	void					compileShaders();
 
 	int						cellWidth, cellHeight;
-	gl::GlslProgRef			mUpdateShader, mRenderShader;
+	gl::GlslProgRef			mUpdateShader, mRenderShader, mDrawShader;
 	CameraPersp                 mCamera;
 	CameraUi                 mCamUi;
-	bool mIsCursorVisible;
+	bool					mIsCursorVisible;
+	bool					mEvolve;
+	bool					mDrawMode;
 
 	int					mCurrentFBO, mOtherFBO;
 	gl::FboRef  mFbos[2];
@@ -31,7 +38,8 @@ class gameOfLifeApp : public App {
 
 void gameOfLifeApp::setup()
 {
-	
+	mEvolve = false;
+	mDrawMode = false;
 
 	randSeed(clock());
 	compileShaders();
@@ -40,8 +48,8 @@ void gameOfLifeApp::setup()
 	cellHeight = getWindowHeight();
 
 	mCamera = CameraPersp(cellWidth, cellHeight, 45.0f, 0.01f, 5000.0f);
-	mCamera.lookAt(vec3(0.0f,0.0f,500.0f), vec3(0.0f, 0.0f, 0.0f));
-	mCamUi = CameraUi(&mCamera, getWindow(), -1);
+	mCamera.lookAt(vec3(0.0f,0.0f,100.0f), vec3(0.0f, 0.0f, 0.0f));
+	mCamUi = CameraUi(&mCamera);
 
 	vector<float> color(cellWidth * cellHeight * 3);
 	Surface32f result(cellWidth, cellHeight, false);
@@ -77,8 +85,32 @@ void gameOfLifeApp::setup()
 	}
 }
 
-void gameOfLifeApp::mouseDown( MouseEvent event )
+
+void gameOfLifeApp::mouseDown(MouseEvent event)
 {
+	if (event.isLeftDown() && !mEvolve) {
+		mDrawMode = true;
+	}
+}
+
+void gameOfLifeApp::mouseUp(MouseEvent event)
+{
+	if (event.isLeft()) {
+		mDrawMode = false;
+	}
+	mCamUi.mouseUp(event);
+}
+
+void gameOfLifeApp::mouseDrag(MouseEvent event)
+{
+	////mCamUi.mouseDrag(event);
+	if (event.isRightDown()) mCamUi.mouseDrag(event.getPos(), false, true, false);
+}
+
+void gameOfLifeApp::mouseWheel(MouseEvent event)
+{
+	//if(mCamera.getEyePoint().z > 0 && mCamera.getEyePoint().z < 600)
+	mCamUi.mouseWheel(event);
 }
 
 void gameOfLifeApp::keyDown(KeyEvent event)
@@ -93,6 +125,10 @@ void gameOfLifeApp::keyDown(KeyEvent event)
 		if (!isFullScreen())
 			forceShowCursor();
 		break;
+	case KeyEvent::KEY_SPACE:
+		mEvolve = !mEvolve;
+		mDrawMode = false;
+		break;
 	}
 }
 
@@ -105,18 +141,46 @@ void gameOfLifeApp::forceShowCursor()
 
 void gameOfLifeApp::update()
 {
-    mCurrentFBO = (mCurrentFBO + 1) % 2;
-    mOtherFBO = (mCurrentFBO + 1) % 2;
-	{
-        gl::ScopedFramebuffer fboBind(mFbos[mCurrentFBO]);
-//        gl::ScopedViewport scpVp( ivec2( 0 ), mFbos[ mOtherFBO ]->getSize() );
-//        gl::setMatricesWindow(mFbos[mOtherFBO]->getSize());
-        gl::setMatricesWindow( mFbos[ mOtherFBO ]->getSize(), false );
-        gl::clear(Color(0, 0, 0));
-        gl::ScopedTextureBind tex0(mFbos[mOtherFBO]->getColorTexture());
-        gl::ScopedGlslProg    scpProg(mUpdateShader);
-        mUpdateShader->uniform("uBackBuffer", 0);
-        gl::drawSolidRect(mFbos[mOtherFBO]->getBounds());
+	
+	if (mDrawMode) {
+		mCurrentFBO = (mCurrentFBO + 1) % 2;
+		mOtherFBO = (mCurrentFBO + 1) % 2;
+		ivec2 mouse = getWindow()->getMousePos();
+
+		float u = mouse.x / (float)getWindowWidth();
+		float v = mouse.y / (float)getWindowHeight();
+		Ray ray = mCamera.generateRay(mouse, getWindowSize());
+		float dist;
+		if (ray.calcPlaneIntersection(vec3(0.0f), vec3(0, 0, -1), &dist)) {
+			auto rayPos = -ray.calcPosition(dist); // This may be the droid you're looking for
+			rayPos += vec3(540.0f, 540.0f, 0.0f);
+			console() << rayPos << endl;
+			gl::ScopedFramebuffer fboBind(mFbos[mCurrentFBO]);
+			//        gl::ScopedViewport scpVp( ivec2( 0 ), mFbos[ mOtherFBO ]->getSize() );
+			//        gl::setMatricesWindow(mFbos[mOtherFBO]->getSize());
+			gl::setMatricesWindow(mFbos[mOtherFBO]->getSize(), false);
+			gl::clear(Color(0, 0, 0));
+			gl::ScopedTextureBind tex0(mFbos[mOtherFBO]->getColorTexture());
+			gl::ScopedGlslProg    scpProg(mDrawShader);
+			mDrawShader->uniform("uLifeTex", 0);
+			mDrawShader->uniform("uPos", rayPos);
+			gl::drawSolidRect(mFbos[mOtherFBO]->getBounds());
+		}
+	}
+	if (mEvolve) {
+		mCurrentFBO = (mCurrentFBO + 1) % 2;
+		mOtherFBO = (mCurrentFBO + 1) % 2;
+		{
+			gl::ScopedFramebuffer fboBind(mFbos[mCurrentFBO]);
+			//        gl::ScopedViewport scpVp( ivec2( 0 ), mFbos[ mOtherFBO ]->getSize() );
+			//        gl::setMatricesWindow(mFbos[mOtherFBO]->getSize());
+			gl::setMatricesWindow(mFbos[mOtherFBO]->getSize(), false);
+			gl::clear(Color(0, 0, 0));
+			gl::ScopedTextureBind tex0(mFbos[mOtherFBO]->getColorTexture());
+			gl::ScopedGlslProg    scpProg(mUpdateShader);
+			mUpdateShader->uniform("uBackBuffer", 0);
+			gl::drawSolidRect(mFbos[mOtherFBO]->getBounds());
+		}
 	}
 	
 }
@@ -146,10 +210,17 @@ void gameOfLifeApp::compileShaders()
 	try {
 		mUpdateShader = gl::GlslProg::create(loadAsset("updateShader.vert"), loadAsset("updateShader.frag"));
 		mRenderShader = gl::GlslProg::create(loadAsset("renderShader.vert"), loadAsset("renderShader.frag"));
+		mDrawShader = gl::GlslProg::create(loadAsset("drawShader.vert"), loadAsset("drawShader.frag"));
 	}
 	catch (const std::exception &e) {
 		console() << e.what() << std::endl;
 	}
 }
 
-CINDER_APP( gameOfLifeApp, RendererGl )
+void gameOfLifeApp::prepare(App::Settings *settings)
+{
+	settings->setWindowSize(1080, 1080);
+}
+
+CINDER_APP(gameOfLifeApp, RendererGl(RendererGl::Options().msaa(16)), &gameOfLifeApp::prepare)
+
