@@ -309,20 +309,17 @@ void ChaosApp::renderUI(){
     gl::drawStringCentered("SYSTEM IDENTIFIED", mCamera.worldToScreen(eyePoint + 5.0f * viewDirection + up * 1.9f, w, h), textCol, mFontUI);
     gl::drawStringCentered("ANALYZING", mCamera.worldToScreen(eyePoint + 5.0f * viewDirection + up * 1.9f, w, h), negTextCol, mFontUI);
 
-    resultBar.set(0.0f,0.0f,10.0f,10.0f);
-    resultBar.scaleCentered(vec2(10.0f, 2.2f));
-    resultBar.offsetCenterTo(mCamera.worldToScreen(eyePoint + 5.0f * viewDirection - up * 1.635f, w, h));
-    
-    
-    
-    gl::draw( mPhiTex, Rectf( phiPos.x - 110, phiPos.y - 20, phiPos.x - 110 + mPhiTex->getWidth()/1.5, phiPos.y - 20 + mPhiTex->getHeight()/1.5 ) );
-    vec2 resumePos = mCamera.worldToScreen(eyePoint + 5.0f * viewDirection - up * 1.6f, w, h);
+    gl::draw( mPhi, mCamera.worldToScreen(eyePoint + 5.0f * viewDirection - up * 1.6f, w, h);
     gl::draw( mResumeTex, Rectf( resumePos.x - 10, resumePos.y + 50, resumePos.x - 10 + mResumeTex->getWidth()/1.2, resumePos.y + 50 + mResumeTex->getHeight()/1.2 ) );
     
     if(timer - blinkTimer > 0.5){
         blink = !blink;
         blinkTimer = timer;
     }
+    
+    resultBar.set(0.0f,0.0f,10.0f,10.0f);
+    resultBar.scaleCentered(vec2(10.0f, 2.2f));
+    resultBar.offsetCenterTo(mCamera.worldToScreen(eyePoint + 5.0f * viewDirection - up * 1.635f, w, h));
     if(blink){
         if(unstable){
             gl::color(textColRed);

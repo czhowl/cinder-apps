@@ -26,6 +26,7 @@ class gameOfLifeApp : public App {
 
 	int					mCurrentFBO, mOtherFBO;
 	gl::FboRef  mFbos[2];
+    gl::TextureRef mTex;
 };
 
 void gameOfLifeApp::setup()
@@ -60,25 +61,19 @@ void gameOfLifeApp::setup()
 	gl::Fbo::Format fmt;
 	fmt.enableDepthBuffer(false);
 	// use a single channel (red) for the displacement map
-	gl::enable(GL_TEXTURE_RECTANGLE_ARB);
-	fmt.setColorTextureFormat(ci::gl::Texture2d::Format().target(GL_TEXTURE_RECTANGLE_ARB).internalFormat(GL_RGB32F_ARB).minFilter(GL_NEAREST).magFilter(GL_NEAREST).wrap(GL_CLAMP_TO_EDGE));
+    gl::enable(GL_TEXTURE_RECTANGLE);
+	fmt.setColorTextureFormat(ci::gl::Texture2d::Format().target(GL_TEXTURE_RECTANGLE).internalFormat(GL_RGB32F_ARB).minFilter(GL_NEAREST).magFilter(GL_NEAREST).wrap(GL_CLAMP_TO_EDGE));
 	for (int i = 0; i < 2; i++) {
 		mFbos[i] = ci::gl::Fbo::create(cellWidth, cellHeight, fmt);
 	}
+    mTex = gl::Texture::create(result, gl::Texture::Format().target(GL_TEXTURE_RECTANGLE).minFilter(GL_NEAREST).magFilter(GL_NEAREST));
 	for (int i = 0; i < 2; i++) {
 		ci::gl::ScopedFramebuffer scpFbo(mFbos[i]);
-		ci::gl::ScopedViewport    scpViewport(mFbos[i]->getSize());
-		ci::gl::clear();
-	}
-	
-	for (vector<float>::const_iterator ptIt = color.begin(); ptIt != color.end(); ptIt += 3) {
-		
-	}
-	gl::TextureRef m_tex = gl::Texture::create(result, gl::Texture::Format().target(GL_TEXTURE_RECTANGLE_ARB));
-	for (int i = 0; i < 2; i++) {
-		gl::ScopedFramebuffer fboBind(mFbos[i]);
+        gl::pushMatrices();
 		gl::setMatricesWindow(mFbos[i]->getSize());
-		gl::draw(m_tex);
+		ci::gl::clear();
+        gl::draw(mTex);
+        gl::popMatrices();
 	}
 }
 
@@ -110,17 +105,18 @@ void gameOfLifeApp::forceShowCursor()
 
 void gameOfLifeApp::update()
 {
-	mCurrentFBO = (mCurrentFBO + 1) % 2;
-	mOtherFBO = (mCurrentFBO + 1) % 2;
+    mCurrentFBO = (mCurrentFBO + 1) % 2;
+    mOtherFBO = (mCurrentFBO + 1) % 2;
 	{
-		gl::ScopedFramebuffer fboBind(mFbos[mCurrentFBO]);
-		gl::ScopedModelMatrix modelScope;
-		gl::setMatricesWindow(mFbos[mCurrentFBO]->getSize());
-		gl::clear(Color(0, 0, 0));
-		gl::ScopedTextureBind tex0(mFbos[mOtherFBO]->getColorTexture());
-		gl::ScopedGlslProg    scpProg(mUpdateShader);
-		mUpdateShader->uniform("uBackBuffer", 0);
-		gl::drawSolidRect(mFbos[mCurrentFBO]->getBounds());
+        gl::ScopedFramebuffer fboBind(mFbos[mCurrentFBO]);
+//        gl::ScopedViewport scpVp( ivec2( 0 ), mFbos[ mOtherFBO ]->getSize() );
+//        gl::setMatricesWindow(mFbos[mOtherFBO]->getSize());
+        gl::setMatricesWindow( mFbos[ mOtherFBO ]->getSize(), false );
+        gl::clear(Color(0, 0, 0));
+        gl::ScopedTextureBind tex0(mFbos[mOtherFBO]->getColorTexture());
+        gl::ScopedGlslProg    scpProg(mUpdateShader);
+        mUpdateShader->uniform("uBackBuffer", 0);
+        gl::drawSolidRect(mFbos[mOtherFBO]->getBounds());
 	}
 	
 }
@@ -129,20 +125,20 @@ void gameOfLifeApp::draw()
 {
 	
 	gl::clear( Color( 0, 0, 0 ) );
-	if (true) {
-		gl::ScopedModelMatrix modelScope;
-		gl::setMatrices(mCamera);
-		gl::ScopedTextureBind tex0(mFbos[mCurrentFBO]->getColorTexture());
-		gl::ScopedGlslProg    scpProg(mRenderShader);
-		mRenderShader->uniform("uLifeTex", 0);
-		Rectf	window = getWindowBounds();
-		gl::pushMatrices();
-		gl::translate(
-			-getWindowWidth() / 2, -getWindowHeight() / 2
-		);
-		gl::drawSolidRect(Rectf(0.0, 0.0, getWindowWidth(), getWindowHeight()));
-		gl::popMatrices();
-	}
+    gl::pushMatrices();
+    gl::setMatrices(mCamera);
+    gl::pushMatrices();
+    gl::translate(-getWindowWidth() / 2, -getWindowHeight() / 2);
+//    gl::draw(mTex);
+//    gl::draw(mFbos[mCurrentFBO]->getColorTexture());
+    if (true) {
+        gl::ScopedTextureBind tex0(mFbos[mCurrentFBO]->getColorTexture());
+        gl::ScopedGlslProg    scpProg(mRenderShader);
+        mRenderShader->uniform("uLifeTex", 0);
+        gl::drawSolidRect(Rectf(0.0, 0.0, getWindowWidth(), getWindowHeight()));
+    }
+    gl::popMatrices();
+    gl::popMatrices();
 }
 
 void gameOfLifeApp::compileShaders()
