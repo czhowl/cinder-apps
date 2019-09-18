@@ -15,6 +15,7 @@ public:
     void touchesBegan( TouchEvent event ) override;
     void update() override;
     void draw() override;
+//    void decompose ( glm::mat4x4 matrix, glm::vec3& scaling, glm::quat& rotation, glm::vec3& position);
     
     ARKit::Session mARSession;
     
@@ -63,19 +64,25 @@ void iostestApp::draw()
     gl::setViewMatrix( mARSession.getViewMatrix() );
     gl::setProjectionMatrix( mARSession.getProjectionMatrix() );
     
+    gl::ScopedBlendAdditive blend;
     gl::ScopedGlslProg glslProg( mDrawShader);
     gl::ScopedTextureBind tex0( mTextureStar, (uint8_t)0 );
     gl::ScopedTextureBind tex1( mTextureCorona, (uint8_t)1 );
     mDrawShader->uniform( "time", (float)getElapsedSeconds() );
 //    gl::color( 1.0f, 1.0f, 1.0f );
+    glm::mat4 transformation; // your transformation matrix.
     
+    vec3 right = glm::vec3( glm::row( mARSession.getViewMatrix(), 0 ) );
+    vec3  up = glm::vec3( glm::row( mARSession.getViewMatrix(), 1 ) );
     for (const auto& a : mARSession.getAnchors())
     {
         gl::ScopedMatrices matScp;
-        gl::setModelMatrix( a.mTransform );
+//        gl::setModelMatrix( a.mTransform );
+        gl::translate(a.mTransform[3][0], a.mTransform[3][1], a.mTransform[3][2]);
+//        console() << a.mTransform << endl;
 //        gl::drawStrokedCube( vec3(0.0f), vec3(0.02f) );
-//        gl::drawBillboard(vec3(0.0f), vec2(0.02f), 0, vec3(0.01f), vec3(0.01f));
-        gl::drawSolidRect(Rectf(0.0,0.0,0.02,0.02));
+        gl::drawBillboard(vec3(0.0f), vec2(0.02f), 0, right, up);
+//        gl::drawSolidRect(Rectf(0.0,0.0,0.02,0.02));
 //        gl::draw(mTextureStar, Rectf(0.0,0.0,0.02,0.02));
     }
     
