@@ -22,6 +22,8 @@
 		5CF913C1232F5A38001CA40F /* renderShader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5CF913BD232F5A38001CA40F /* renderShader.vert */; };
 		5CF913C2232F5A38001CA40F /* renderShader.frag in Resources */ = {isa = PBXBuildFile; fileRef = 5CF913BE232F5A38001CA40F /* renderShader.frag */; };
 		5CF913C3232F5A38001CA40F /* updateShader.frag in Resources */ = {isa = PBXBuildFile; fileRef = 5CF913BF232F5A38001CA40F /* updateShader.frag */; };
+		5CF913C623316E5B001CA40F /* drawShader.frag in Resources */ = {isa = PBXBuildFile; fileRef = 5CF913C423316E5B001CA40F /* drawShader.frag */; };
+		5CF913C723316E5B001CA40F /* drawShader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5CF913C523316E5B001CA40F /* drawShader.vert */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		E49ACBA1C88B40CDB2EA4BB1 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 860F344956B146288E8749A6 /* CinderApp.icns */; };
 /* End PBXBuildFile section */
@@ -47,6 +49,8 @@
 		5CF913BD232F5A38001CA40F /* renderShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = renderShader.vert; sourceTree = "<group>"; };
 		5CF913BE232F5A38001CA40F /* renderShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = renderShader.frag; sourceTree = "<group>"; };
 		5CF913BF232F5A38001CA40F /* updateShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = updateShader.frag; sourceTree = "<group>"; };
+		5CF913C423316E5B001CA40F /* drawShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = drawShader.frag; sourceTree = "<group>"; };
+		5CF913C523316E5B001CA40F /* drawShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = drawShader.vert; sourceTree = "<group>"; };
 		61C60CCFDD344F15A7BAE0D9 /* gameOfLifeApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = gameOfLifeApp.cpp; path = ../src/gameOfLifeApp.cpp; sourceTree = "<group>"; };
 		860F344956B146288E8749A6 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* gameOfLife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gameOfLife.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -168,6 +172,8 @@
 		5CF913BB232F5A38001CA40F /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				5CF913C423316E5B001CA40F /* drawShader.frag */,
+				5CF913C523316E5B001CA40F /* drawShader.vert */,
 				5CF913BC232F5A38001CA40F /* updateShader.vert */,
 				5CF913BD232F5A38001CA40F /* renderShader.vert */,
 				5CF913BE232F5A38001CA40F /* renderShader.frag */,
@@ -231,8 +237,10 @@
 			files = (
 				5CF913C3232F5A38001CA40F /* updateShader.frag in Resources */,
 				5CF913C0232F5A38001CA40F /* updateShader.vert in Resources */,
+				5CF913C723316E5B001CA40F /* drawShader.vert in Resources */,
 				E49ACBA1C88B40CDB2EA4BB1 /* CinderApp.icns in Resources */,
 				5CF913C2232F5A38001CA40F /* renderShader.frag in Resources */,
+				5CF913C623316E5B001CA40F /* drawShader.frag in Resources */,
 				5CF913C1232F5A38001CA40F /* renderShader.vert in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -30,6 +30,7 @@ class gameOfLifeApp : public App {
 	bool					mIsCursorVisible;
 	bool					mEvolve;
 	bool					mDrawMode;
+    float                   mPenSize;
 
 	int					mCurrentFBO, mOtherFBO;
 	gl::FboRef  mFbos[2];
@@ -40,6 +41,7 @@ void gameOfLifeApp::setup()
 {
 	mEvolve = false;
 	mDrawMode = false;
+    mPenSize = 0.01;
 
 	randSeed(clock());
 	compileShaders();
@@ -129,6 +131,12 @@ void gameOfLifeApp::keyDown(KeyEvent event)
 		mEvolve = !mEvolve;
 		mDrawMode = false;
 		break;
+    case KeyEvent::KEY_DOWN:
+        if(mPenSize / 2 > 0.0005) mPenSize = mPenSize / 2;
+        break;
+    case KeyEvent::KEY_UP:
+        if(mPenSize * 2 < 0.8) mPenSize = mPenSize * 2;
+        break;
 	}
 }
 
@@ -153,7 +161,7 @@ void gameOfLifeApp::update()
 		float dist;
 		if (ray.calcPlaneIntersection(vec3(0.0f), vec3(0, 0, -1), &dist)) {
 			auto rayPos = -ray.calcPosition(dist); // This may be the droid you're looking for
-			rayPos += vec3(540.0f, 540.0f, 0.0f);
+			rayPos += vec3(500.0f, 500.0f, 0.0f);
 			console() << rayPos << endl;
 			gl::ScopedFramebuffer fboBind(mFbos[mCurrentFBO]);
 			//        gl::ScopedViewport scpVp( ivec2( 0 ), mFbos[ mOtherFBO ]->getSize() );
@@ -164,6 +172,7 @@ void gameOfLifeApp::update()
 			gl::ScopedGlslProg    scpProg(mDrawShader);
 			mDrawShader->uniform("uLifeTex", 0);
 			mDrawShader->uniform("uPos", rayPos);
+            mDrawShader->uniform("uSize", mPenSize);
 			gl::drawSolidRect(mFbos[mOtherFBO]->getBounds());
 		}
 	}
@@ -219,7 +228,7 @@ void gameOfLifeApp::compileShaders()
 
 void gameOfLifeApp::prepare(App::Settings *settings)
 {
-	settings->setWindowSize(1080, 1080);
+	settings->setWindowSize(1000, 1000);
 }
 
 CINDER_APP(gameOfLifeApp, RendererGl(RendererGl::Options().msaa(16)), &gameOfLifeApp::prepare)
