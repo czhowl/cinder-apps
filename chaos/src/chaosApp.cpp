@@ -309,8 +309,8 @@ void ChaosApp::renderUI(){
     gl::drawStringCentered("SYSTEM IDENTIFIED", mCamera.worldToScreen(eyePoint + 5.0f * viewDirection + up * 1.9f, w, h), textCol, mFontUI);
     gl::drawStringCentered("ANALYZING", mCamera.worldToScreen(eyePoint + 5.0f * viewDirection + up * 1.9f, w, h), negTextCol, mFontUI);
 
-    gl::draw( mPhi, mCamera.worldToScreen(eyePoint + 5.0f * viewDirection - up * 1.6f, w, h);
-    gl::draw( mResumeTex, Rectf( resumePos.x - 10, resumePos.y + 50, resumePos.x - 10 + mResumeTex->getWidth()/1.2, resumePos.y + 50 + mResumeTex->getHeight()/1.2 ) );
+//    gl::draw( mPhi, mCamera.worldToScreen(eyePoint + 5.0f * viewDirection - up * 1.6f, w, h);
+//    gl::draw( mResumeTex, Rectf( resumePos.x - 10, resumePos.y + 50, resumePos.x - 10 + mResumeTex->getWidth()/1.2, resumePos.y + 50 + mResumeTex->getHeight()/1.2 ) );
     
     if(timer - blinkTimer > 0.5){
         blink = !blink;
@@ -324,11 +324,11 @@ void ChaosApp::renderUI(){
         if(unstable){
             gl::color(textColRed);
             gl::drawSolidRect(resultBar);
-            gl::drawStringCentered("UNSTABLE", resumePos, textCol, mFontUI);
+//            gl::drawStringCentered("UNSTABLE", resumePos, textCol, mFontUI);
         }else{
             gl::color(textCol);
             gl::drawSolidRect(resultBar);
-            gl::drawStringCentered("PASS", resumePos, textColB, mFontUI);
+//            gl::drawStringCentered("PASS", resumePos, textColB, mFontUI);
         }
     }
     
