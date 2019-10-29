@@ -24,7 +24,7 @@ class keyboardSoundApp : public App {
 	audio::VoiceRef mKey;
 	float			mVolume;
 	bool			mRelease;
-	audio::VoiceRef mKeys[15];
+	audio::VoiceRef mKeys[26];
 };
 
 void keyboardSoundApp::setup()
@@ -35,8 +35,8 @@ void keyboardSoundApp::setup()
 	mDuck = audio::Voice::create(audio::load(loadAsset("duck_mixdown.wav")));
 	mDuck->setVolume(5.0f);
 	mKey = audio::Voice::create(audio::load(loadAsset("key_mixdown.wav")));
-	for (int i = 0; i < 15; i++) {
-		mKeys[i] = audio::Voice::create(audio::load(loadAsset(to_string(i) + "_mixdown.wav")));
+	for (int i = 0; i < 26; i++) {
+		mKeys[i] = audio::Voice::create(audio::load(loadAsset(to_string(Rand::randInt(15)) + "_mixdown.wav")));
 		mKeys[i]->setVolume(0.3f);
 	}
 }
@@ -60,7 +60,7 @@ void keyboardSoundApp::keyDown(KeyEvent event)
 {
 	mRelease = false;
 	mVolume += 0.5f / mVolume;
-	mKeys[Rand::randInt(15)]->start();
+	mKeys[event.getChar() - 'a']->start();
 }
 
 void keyboardSoundApp::keyUp(KeyEvent event)
