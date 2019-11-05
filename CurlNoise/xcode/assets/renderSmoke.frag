@@ -3,7 +3,7 @@
 
 uniform sampler2D ParticleTex;
 
-in float Transp;
+in float agePct;
 in vec4  Pcolor;
 out vec4 FragColor;
 
@@ -15,5 +15,6 @@ void main() {
 //    FragColor.a *= (Transp);
 //    FragColor.a -= .1;
 //    FragColor = vec4(1.0, 1.0, 1.0, 0.5);
-    FragColor = Pcolor;
+//    FragColor = Pcolor;
+    FragColor = mix(Pcolor, vec4(0.0, 0.3, 0.7, 1.0), agePct - 0.1);
 }

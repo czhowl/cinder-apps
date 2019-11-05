@@ -5,12 +5,13 @@
 #include "cinder/gl/TransformFeedbackObj.h"
 #include "cinder/Rand.h"
 #include "cinder/CameraUi.h"
+#include "cinder/Perlin.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-const int nParticles            = 40000;
+const int nParticles            = 100000;
 const int PositionIndex            = 0;
 const int VelocityIndex            = 1;
 const int StartTimeIndex        = 2;
@@ -45,17 +46,24 @@ class CurlNoiseApp : public App {
     CameraPersp                        mCam;
     CameraUi                           mCamUI;
     uint32_t                           mDrawBuff;
+    
+    vec3                               mEmitter, mPrevEmitter;
+    Perlin                             mPerlin;
 };
 
 void CurlNoiseApp::setup()
 {
     mDrawBuff = 1;
     
-    mCam.setPerspective( 60.0f, getWindowAspectRatio(), .01f, 1000.0f );
+    mCam.setPerspective( 60.0f, getWindowAspectRatio(), .01f, 10000.0f );
     mCam.lookAt( vec3( 10, 10, 10 ), vec3( 0, 0, 0 ) );
     mCamUI = CameraUi(&mCam, getWindow() );
     loadShaders();
     loadBuffers();
+    
+    mEmitter = vec3(0.0);
+    mPerlin = Perlin(4, clock());
+     
 }
 
 void CurlNoiseApp::mouseDown( MouseEvent event )
@@ -76,9 +84,14 @@ void CurlNoiseApp::keyDown( KeyEvent event )
 
 void CurlNoiseApp::update()
 {
+//    hideCursor ();
+    // Update Emitter
+    float time = getElapsedFrames() / 60.0f;
+    mPrevEmitter = mEmitter;
+    mEmitter = vec3(mPerlin.noise(time, 0, 0),mPerlin.noise(0, time, 0),mPerlin.noise(0, 0, time)) * 10.0f;
     // This equation just reliably swaps all concerned buffers
     mDrawBuff = 1 - mDrawBuff;
-    
+//    console()<<mEmitter<<endl;
     gl::ScopedGlslProg    glslScope( mPUpdateGlsl );
     // We use this vao for input to the Glsl, while using the opposite
     // for the TransformFeedbackObj.
@@ -88,8 +101,9 @@ void CurlNoiseApp::update()
     // move to the rasterization stage.
     gl::ScopedState        stateScope( GL_RASTERIZER_DISCARD, true );
     
-    mPUpdateGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
-    
+    mPUpdateGlsl->uniform( "Time", time );
+    mPUpdateGlsl->uniform( "Emitter", mEmitter );
+    mPUpdateGlsl->uniform( "PrevEmitter", mPrevEmitter );
     // Opposite TransformFeedbackObj to catch the calculated values
     // In the opposite buffer
     mPFeedbackObj[1-mDrawBuff]->bind();
@@ -113,7 +127,8 @@ void CurlNoiseApp::draw()
     gl::ScopedVao            vaoScope( mPVao[1-mDrawBuff] );
     gl::ScopedGlslProg        glslScope( mPRenderGlsl );
     gl::ScopedState            stateScope( GL_PROGRAM_POINT_SIZE, true );
-    gl::ScopedBlend            blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+//    gl::ScopedBlend            blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    gl::ScopedBlendAdditive blend;
     
     gl::multModelMatrix( rotate( rotateRadians, vec3( 0, 1, 0 ) ) );
     
@@ -161,8 +176,9 @@ void CurlNoiseApp::loadShaders()
         console() << "PARTICLE UPDATE GLSL ERROR: " << ex.what() << std::endl;
     }
     
-    mPUpdateGlsl->uniform( "H", 1.0f / 60.0f );
+    mPUpdateGlsl->uniform( "H", 0.5f );
     mPUpdateGlsl->uniform( "Accel", vec3( 0.0f ) );
+    mPUpdateGlsl->uniform( "Scale", 0.05f);
     mPUpdateGlsl->uniform( "ParticleLifetime", 3.0f );
     
     try {
@@ -212,16 +228,13 @@ void CurlNoiseApp::loadBuffers()
     mPInitVelocity = ci::gl::Vbo::create( GL_ARRAY_BUFFER,    normals.size() * sizeof(vec3), normals.data(), GL_STATIC_DRAW );
     
     // Create time data for the initialization of the particles
-    array<GLfloat, nParticles> timeData;
-    float time = 0.0f;
-    float rate = 0.001f;
+    std::vector<vec2> timeData( nParticles, vec2( 0.0f ) );
     for( int i = 0; i < nParticles; i++ ) {
-        timeData[i] = time;
-        time += rate;
+        timeData[i] = vec2(0.0f, randFloat(1.0f,150.0f));
     }
 
     // Create the StartTime Buffer, so that we can reset the particle after it's dead
-    mPStartTimes[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, timeData.size() * sizeof( float ), timeData.data(), GL_DYNAMIC_COPY );
+    mPStartTimes[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, timeData.size() * sizeof( vec2 ), timeData.data(), GL_DYNAMIC_COPY );
     // Create the StartTime ping-pong buffer
     mPStartTimes[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, nParticles * sizeof( float ), nullptr, GL_DYNAMIC_COPY );
     
@@ -245,7 +258,7 @@ void CurlNoiseApp::loadBuffers()
         ci::gl::enableVertexAttribArray( VelocityIndex );
         
         mPStartTimes[i]->bind();
-        ci::gl::vertexAttribPointer( StartTimeIndex, 1, GL_FLOAT, GL_FALSE, 0, 0 );
+        ci::gl::vertexAttribPointer( StartTimeIndex, 2, GL_FLOAT, GL_FALSE, 0, 0 );
         ci::gl::enableVertexAttribArray( StartTimeIndex );
         
         mPInitVelocity->bind();
@@ -272,4 +285,8 @@ void CurlNoiseApp::loadBuffers()
     }
 }
 
-CINDER_APP( CurlNoiseApp, RendererGl )
+CINDER_APP( CurlNoiseApp, RendererGl(RendererGl::Options().msaa(16)),
+[&](App::Settings *settings){
+settings->setWindowSize(800, 800);
+//settings->setFrameRate(60.0f);
+} )
