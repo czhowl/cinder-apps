@@ -11,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-const int nParticles            = 400000;
+const int nParticles            = 100000;
 const int PositionIndex            = 0;
 const int VelocityIndex            = 1;
 const int StartTimeIndex        = 2;
@@ -23,25 +23,26 @@ float mix( float x, float y, float a )
     return x * ( 1 - a ) + y * a;
 }
 
-class CurlNoiseApp : public App {
-  public:
-	void setup() override;
-	void mouseDown( MouseEvent event ) override;
+class CurlInstancingApp : public App {
+public:
+    void setup() override;
+    void mouseDown( MouseEvent event ) override;
     void keyDown( KeyEvent event ) override;
-	void update() override;
-	void draw() override;
+    void update() override;
+    void draw() override;
     
     void loadBuffers();
     void loadShaders();
     void loadTexture();
+    void loadBatch();
     
-  private:
+private:
     gl::VaoRef                         mPVao[2];
     gl::TransformFeedbackObjRef        mPFeedbackObj[2];
     gl::VboRef                         mPPositions[2], mPVelocities[2], mPStartTimes[2], mPInitVelocity, mPColor[2];
-
+    
     gl::GlslProgRef                    mPUpdateGlsl, mPRenderGlsl;
-
+    
     Rand                               mRand;
     CameraPersp                        mCam;
     CameraUi                           mCamUI;
@@ -49,9 +50,14 @@ class CurlNoiseApp : public App {
     
     vec3                               mEmitter, mPrevEmitter;
     Perlin                             mPerlin;
+    
+    gl::BatchRef        mBatch;
+    gl::TextureRef        mTexture;
+    gl::GlslProgRef        mInstancingGlsl;
+    gl::VboRef            mInstanceDataVbo;
 };
 
-void CurlNoiseApp::setup()
+void CurlInstancingApp::setup()
 {
     mDrawBuff = 1;
     
@@ -60,17 +66,16 @@ void CurlNoiseApp::setup()
     mCamUI = CameraUi(&mCam, getWindow() );
     loadShaders();
     loadBuffers();
-    
+//    loadBatch();
     mEmitter = vec3(0.0);
     mPerlin = Perlin(4, clock());
-     
 }
 
-void CurlNoiseApp::mouseDown( MouseEvent event )
+void CurlInstancingApp::mouseDown( MouseEvent event )
 {
 }
 
-void CurlNoiseApp::keyDown( KeyEvent event )
+void CurlInstancingApp::keyDown( KeyEvent event )
 {
     switch (event.getCode()) {
         case KeyEvent::KEY_s:
@@ -81,64 +86,68 @@ void CurlNoiseApp::keyDown( KeyEvent event )
     }
 }
 
-void CurlNoiseApp::update()
+void CurlInstancingApp::update()
 {
-//    hideCursor ();
-    // Update Emitter
-    float time = getElapsedFrames() / 60.0f;
-    mPrevEmitter = mEmitter;
-    mEmitter = vec3(mPerlin.noise(time, 0, 0),mPerlin.noise(0, time, 0),mPerlin.noise(0, 0, time)) * 10.0f;
-    // This equation just reliably swaps all concerned buffers
-    mDrawBuff = 1 - mDrawBuff;
-//    console()<<mEmitter<<endl;
-    gl::ScopedGlslProg    glslScope( mPUpdateGlsl );
-    // We use this vao for input to the Glsl, while using the opposite
-    // for the TransformFeedbackObj.
-    gl::ScopedVao        vaoScope( mPVao[mDrawBuff] );
-    // Because we're not using a fragment shader, we need to
-    // stop the rasterizer. This will make sure that OpenGL won't
-    // move to the rasterization stage.
-    gl::ScopedState        stateScope( GL_RASTERIZER_DISCARD, true );
-    
-    mPUpdateGlsl->uniform( "Time", time );
-    mPUpdateGlsl->uniform( "Emitter", mEmitter );
-    mPUpdateGlsl->uniform( "PrevEmitter", mPrevEmitter );
-    // Opposite TransformFeedbackObj to catch the calculated values
-    // In the opposite buffer
-    mPFeedbackObj[1-mDrawBuff]->bind();
-    
-    // We begin Transform Feedback, using the same primitive that
-    // we're "drawing". Using points for the particle system.
-    gl::beginTransformFeedback( GL_POINTS );
-    gl::drawArrays( GL_POINTS, 0, nParticles );
-    gl::endTransformFeedback();
+    //    hideCursor ();
+        // Update Emitter
+        float time = getElapsedFrames() / 60.0f;
+        mPrevEmitter = mEmitter;
+        mEmitter = vec3(mPerlin.noise(time, 0, 0),mPerlin.noise(0, time, 0),mPerlin.noise(0, 0, time)) * 10.0f;
+        // This equation just reliably swaps all concerned buffers
+        mDrawBuff = 1 - mDrawBuff;
+    //    console()<<mEmitter<<endl;
+        gl::ScopedGlslProg    glslScope( mPUpdateGlsl );
+        // We use this vao for input to the Glsl, while using the opposite
+        // for the TransformFeedbackObj.
+        gl::ScopedVao        vaoScope( mPVao[mDrawBuff] );
+        // Because we're not using a fragment shader, we need to
+        // stop the rasterizer. This will make sure that OpenGL won't
+        // move to the rasterization stage.
+        gl::ScopedState        stateScope( GL_RASTERIZER_DISCARD, true );
+        
+        mPUpdateGlsl->uniform( "Time", time );
+        mPUpdateGlsl->uniform( "Emitter", mEmitter );
+        mPUpdateGlsl->uniform( "PrevEmitter", mPrevEmitter );
+        // Opposite TransformFeedbackObj to catch the calculated values
+        // In the opposite buffer
+        mPFeedbackObj[1-mDrawBuff]->bind();
+        
+        // We begin Transform Feedback, using the same primitive that
+        // we're "drawing". Using points for the particle system.
+        gl::beginTransformFeedback( GL_POINTS );
+        gl::drawArrays( GL_POINTS, 0, nParticles );
+        gl::endTransformFeedback();
 }
 
-void CurlNoiseApp::draw()
+void CurlInstancingApp::draw()
 {
     gl::pushMatrices();
-    gl::setMatrices( mCam );
-	gl::clear( Color( 0, 0, 0 ) );
-//    gl::drawSphere( vec3(), 1.0f );
-    static float rotateRadians = 0.0f;
-    rotateRadians += 0.01f;
-    
-    gl::ScopedVao            vaoScope( mPVao[1-mDrawBuff] );
-    gl::ScopedGlslProg        glslScope( mPRenderGlsl );
-    gl::ScopedState            stateScope( GL_PROGRAM_POINT_SIZE, true );
-    gl::ScopedBlend            blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-//    gl::ScopedBlendAdditive blend;
-    
-//    gl::multModelMatrix( rotate( rotateRadians, vec3( 0, 1, 0 ) ) );
-    
-    mPRenderGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
-    gl::setDefaultShaderVars();
-    gl::drawArrays( GL_POINTS, 0, nParticles );
-    
-    gl::popMatrices();
+        gl::setMatrices( mCam );
+        gl::clear( Color( 0, 0, 0 ) );
+    //    gl::drawSphere( vec3(), 1.0f );
+        static float rotateRadians = 0.0f;
+        rotateRadians += 0.01f;
+        
+        gl::ScopedVao            vaoScope( mPVao[1-mDrawBuff] );
+        gl::ScopedGlslProg        glslScope( mPRenderGlsl );
+        gl::ScopedState            stateScope( GL_PROGRAM_POINT_SIZE, true );
+        gl::ScopedBlend            blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    //    gl::ScopedBlendAdditive blend;
+        
+    //    gl::multModelMatrix( rotate( rotateRadians, vec3( 0, 1, 0 ) ) );
+        
+        mPRenderGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
+        gl::setDefaultShaderVars();
+        gl::drawArrays( GL_POINTS, 0, nParticles );
+        
+        gl::popMatrices();
 }
 
-void CurlNoiseApp::loadShaders()
+void CurlInstancingApp::loadBatch(){
+//    gl::VboMeshRef mesh = gl::VboMesh::create( geom::Teapot().subdivisions( 4 ) );
+}
+
+void CurlInstancingApp::loadShaders()
 {
     try {
         // Create a vector of Transform Feedback "Varyings".
@@ -156,7 +165,7 @@ void CurlNoiseApp::loadShaders()
         // Notice that we don't offer a fragment shader. We don't need
         // one because we're not trying to write pixels while updating
         // the position, velocity, etc. data to the screen.
-        mUpdateParticleGlslFormat.vertex( loadAsset( "updateSmoke.vert" ) )
+        mUpdateParticleGlslFormat.vertex( loadAsset( "update.vert" ) )
         // This option will be either GL_SEPARATE_ATTRIBS or GL_INTERLEAVED_ATTRIBS,
         // depending on the structure of our data, below. We're using multiple
         // buffers. Therefore, we're using GL_SEPERATE_ATTRIBS
@@ -183,8 +192,8 @@ void CurlNoiseApp::loadShaders()
     try {
         ci::gl::GlslProg::Format mRenderParticleGlslFormat;
         // This being the render glsl, we provide a fragment shader.
-        mRenderParticleGlslFormat.vertex( loadAsset( "renderSmoke.vert" ) )
-            .fragment( loadAsset( "renderSmoke.frag" ) )
+        mRenderParticleGlslFormat.vertex( loadAsset( "render.vert" ) )
+            .fragment( loadAsset( "render.frag" ) )
             .attribLocation("VertexPosition",            PositionIndex )
             .attribLocation( "VertexStartTime",            StartTimeIndex )
             .attribLocation( "VertexColor",             ColorIndex );
@@ -199,9 +208,11 @@ void CurlNoiseApp::loadShaders()
     mPRenderGlsl->uniform( "MinParticleSize", 1.0f );
     mPRenderGlsl->uniform( "MaxParticleSize", 64.0f );
     mPRenderGlsl->uniform( "ParticleLifetime", 3.0f );
+    
+    mInstancingGlsl = gl::GlslProg::create( loadAsset( "instancing.vert" ), loadAsset( "instancing.frag" ) );
 }
 
-void CurlNoiseApp::loadBuffers()
+void CurlInstancingApp::loadBuffers()
 {
     // Initialize positions
     std::vector<vec3> positions( nParticles, vec3( 0.0f ) );
@@ -241,6 +252,14 @@ void CurlNoiseApp::loadBuffers()
     mPColor[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, colors.size() * sizeof(vec4), colors.data(), GL_STATIC_DRAW );
     // Create the StartTime ping-pong buffer
     mPColor[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, colors.size() * sizeof(vec4), nullptr, GL_STATIC_DRAW );
+    
+    // --------------------------------------------------------------------------------------------------------- INSTANCING
+    gl::VboMeshRef mesh = gl::VboMesh::create( geom::Teapot().subdivisions( 4 ) );
+    geom::BufferLayout instanceDataLayout;
+    instanceDataLayout.append( geom::Attrib::CUSTOM_0, 3, 0, 0, 1 /* per instance */ );
+    mesh->appendVbo( instanceDataLayout, mInstanceDataVbo );
+    mBatch = gl::Batch::create( mesh, mGlsl, { { geom::Attrib::CUSTOM_0, "vInstancePosition" } } );
+    
     
     for( int i = 0; i < 2; i++ ) {
         // Initialize the Vao's holding the info for each buffer
@@ -284,7 +303,7 @@ void CurlNoiseApp::loadBuffers()
     }
 }
 
-CINDER_APP( CurlNoiseApp, RendererGl(RendererGl::Options().msaa(16)),
+CINDER_APP( CurlInstancingApp, RendererGl(RendererGl::Options().msaa(16)),
 [&](App::Settings *settings){
 settings->setWindowSize(800, 800);
            settings->setHighDensityDisplayEnabled();

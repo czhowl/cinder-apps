@@ -1,5 +1,3 @@
-#version 150 core
-
 #define PI 3.14159265358979
 
 vec4 mod289(vec4 x) {
@@ -123,56 +121,4 @@ float snoise(vec4 v)
 float random(vec2 n)
 {
     return fract(sin(dot(n.xy, vec2(12.9898, 78.233)))* 43758.5453);
-}
-
-in vec3 VertexPosition;
-in vec3 VertexVelocity;
-in vec2 VertexStartTime;
-in vec3 VertexInitialVelocity;
-in vec4 VertexColor;
-
-out vec3 Position; // To Transform Feedback
-out vec3 Velocity; // To Transform Feedback
-out vec4 Color; // To Transform Feedback
-out vec2 StartTime; // To Transform Feedback
-
-
-uniform float Time; // Time
-uniform float H;    // Elapsed time between frames
-uniform vec3 Accel; // Particle Acceleration
-uniform float ParticleLifetime; // Particle lifespan
-uniform vec3 Emitter;
-uniform vec3 PrevEmitter;
-uniform float Scale;
-
-
-void main() {
-    
-    // Update position & velocity for next frame
-    Position = VertexPosition;
-    Velocity = VertexVelocity;
-    float age = VertexStartTime.x;
-    float maxAge = VertexStartTime.y;
-    age += H * 1.0;
-    
-    if( age > maxAge ) {
-        // The particle is past it's lifetime, recycle.
-        //            Position = vec3(3.0);
-        age = 0.0;
-        maxAge = 50.0 + 250.0 * random(Position.xx);
-        float theta = 2.0 * PI * random(Position.yy);
-        float phi = PI * random(Position.zz);
-        float r = 5.0 * random(Position.xy);
-        vec3 startPos = PrevEmitter + (Emitter - PrevEmitter) * random(Position.yz);
-        Position = startPos + vec3(r * sin(theta) * cos(phi), r * sin(theta) * sin(phi), r * cos(theta));
-        Velocity = vec3(normalize(startPos));
-    }
-    
-    // The particle is alive, update.
-    Velocity.x += snoise(vec4(Position.x * Scale, Position.y * Scale, Position.z * Scale, 0.1352 * Time * H));
-    Velocity.y += snoise(vec4(Position.x * Scale, Position.y * Scale, Position.z * Scale, 1.2814 * Time * H));
-    Velocity.z += snoise(vec4(Position.x * Scale, Position.y * Scale, Position.z * Scale, 2.5564 * Time * H));
-    Position += Velocity * H;
-    Color = vec4(vec3(1.0), 0.5);
-    StartTime = vec2(age, VertexStartTime.y);
 }
