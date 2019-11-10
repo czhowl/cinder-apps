@@ -1,4 +1,4 @@
-#version 150 core
+#version 330
 
 in vec3 VertexPosition;
 in vec2 VertexStartTime;
@@ -23,7 +23,7 @@ void main() {
     agePct = VertexStartTime.x / VertexStartTime.y;
 //    Transp = 1.0 - agePct;
     //        gl_PointSize = mix( MinParticleSize, MaxParticleSize, Transp );
-    gl_PointSize = mix( 9.0, 0.0, agePct );
+    gl_PointSize = 1.0;
 //            gl_PointSize = 1.0;
     //    }
 }

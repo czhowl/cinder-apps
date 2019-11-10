@@ -13,7 +13,7 @@ void main() {
     gl_Position = ciModelViewProjection * gl_in[0].gl_Position;
     EmitVertex();
 
-    gl_Position = ciModelViewProjection * (gl_in[0].gl_Position + vec4(gFlow.x, 0.0, gFlow.y, 0.0) * (gFlow.z + 1.0) * 0.5);
+    gl_Position = ciModelViewProjection * (gl_in[0].gl_Position + vec4(gFlow.x, 0.0, gFlow.y, 0.0) * 5.0);
     EmitVertex();
     
     EndPrimitive();

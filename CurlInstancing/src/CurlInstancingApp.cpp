@@ -11,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-const int nParticles            = 100000;
+const int nParticles            = 2;
 const int PositionIndex            = 0;
 const int VelocityIndex            = 1;
 const int StartTimeIndex        = 2;
@@ -193,7 +193,7 @@ void CurlInstancingApp::loadShaders()
         ci::gl::GlslProg::Format mRenderParticleGlslFormat;
         // This being the render glsl, we provide a fragment shader.
         mRenderParticleGlslFormat.vertex( loadAsset( "render.vert" ) )
-            .fragment( loadAsset( "render.frag" ) )
+        .fragment( loadAsset( "render.frag" )).geometry(loadAsset("test.geom"))
             .attribLocation("VertexPosition",            PositionIndex )
             .attribLocation( "VertexStartTime",            StartTimeIndex )
             .attribLocation( "VertexColor",             ColorIndex );
@@ -254,11 +254,11 @@ void CurlInstancingApp::loadBuffers()
     mPColor[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, colors.size() * sizeof(vec4), nullptr, GL_STATIC_DRAW );
     
     // --------------------------------------------------------------------------------------------------------- INSTANCING
-    gl::VboMeshRef mesh = gl::VboMesh::create( geom::Teapot().subdivisions( 4 ) );
-    geom::BufferLayout instanceDataLayout;
-    instanceDataLayout.append( geom::Attrib::CUSTOM_0, 3, 0, 0, 1 /* per instance */ );
-    mesh->appendVbo( instanceDataLayout, mInstanceDataVbo );
-    mBatch = gl::Batch::create( mesh, mGlsl, { { geom::Attrib::CUSTOM_0, "vInstancePosition" } } );
+//    gl::VboMeshRef mesh = gl::VboMesh::create( geom::Teapot().subdivisions( 4 ) );
+//    geom::BufferLayout instanceDataLayout;
+//    instanceDataLayout.append( geom::Attrib::CUSTOM_0, 3, 0, 0, 1 /* per instance */ );
+//    mesh->appendVbo( instanceDataLayout, mInstanceDataVbo );
+//    mBatch = gl::Batch::create( mesh, mGlsl, { { geom::Attrib::CUSTOM_0, "vInstancePosition" } } );
     
     
     for( int i = 0; i < 2; i++ ) {

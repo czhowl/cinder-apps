@@ -1,4 +1,4 @@
-#version 150 core
+#version 330
 
 #define PI 3.14159265358979
 
