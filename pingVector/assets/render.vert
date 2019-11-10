@@ -16,7 +16,8 @@ uniform mat4 ciModelViewProjection;
 
 void main() {
     vEnd = VertexEndPosition;
-    gl_Position = ciModelViewProjection * vec4(VertexPosition, 1.0);
+//    gl_Position = ciModelViewProjection * vec4(VertexPosition, 1.0);
+    gl_Position = vec4(VertexPosition, 1.0);
 //    if( Time >= VertexStartTime ) {
 //        float agePct = age / ParticleLifetime;
 //        Transp = 1.0 - agePct;

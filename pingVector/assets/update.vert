@@ -25,9 +25,11 @@ void main() {
     Position = VertexPosition;
     Velocity = VertexVelocity;
     vec3 acce;
+    
     acce = (curlNoise(vec3((VertexPosition.x) * 0.02, (VertexPosition.z) * 0.02, Time * 0.05)) + 0) * VertexRandom;
+//    acce = vec3(0);
     Velocity += acce * H;
-    if(length(Velocity) > 100.0) Velocity = 100.0 * normalize(Velocity);
+    if(length(Velocity) > 200.0) Velocity = 200.0 * normalize(Velocity);
     EndPosition += Velocity * H;
     EndPosition = EndPosition * 2.0 + snoiseVec3(vec3(VertexPosition.xz, Time * (500/VertexRandom))) * 0.5 * length(EndPosition);
 //    if(length(EndPosition) > 100.0) EndPosition = 100.0 * normalize(EndPosition);

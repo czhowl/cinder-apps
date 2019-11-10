@@ -60,7 +60,7 @@ private:
     gl::GlslProgRef        mInstancingGlsl;
     gl::VboRef            mInstanceDataVbo;
     
-    int nParticles            =  10000;
+    int nParticles            =  5000;
     int                     mWidth = 2;
     int                     mHeight = 2;
 };
@@ -138,6 +138,7 @@ void pingVectorApp::draw()
     gl::ScopedGlslProg        glslScope( mPRenderGlsl );
     gl::ScopedState            stateScope( GL_PROGRAM_POINT_SIZE, true );
     gl::ScopedBlend            blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    gl::ScopedBlendAdditive blend;
     
     gl::pushMatrices();
     gl::setMatrices( mCam );
