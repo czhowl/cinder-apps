@@ -158,7 +158,7 @@ void pingVectorApp::loadShaders()
         // Transform Feedback data. For instance, Position, Velocity,
         // and StartTime are variables in the updateSmoke.vert that we
         // write our calculations to.
-        std::vector<std::string> transformFeedbackVaryings( 3 );
+        std::vector<std::string> transformFeedbackVaryings( 4 );
         transformFeedbackVaryings[PositionIndex] = "Position";
         transformFeedbackVaryings[PositionEndIndex] = "EndPosition";
         transformFeedbackVaryings[VelocityIndex] = "Velocity";
