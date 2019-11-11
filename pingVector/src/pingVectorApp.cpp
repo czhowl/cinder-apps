@@ -15,8 +15,8 @@ const int PositionIndex            = 0;
 const int PositionEndIndex         = 1;
 const int VelocityIndex            = 2;
 const int ColorIndex               = 3;
-const int TexCoordIndex            = 4;
 const int RandomIndex              = 4;
+const int TexCoordIndex            = 5;
 //const int StartTimeIndex        = 2;
 //const int InitialVelocityIndex    = 3;
 //const int ColorIndex    = 3;
@@ -43,7 +43,7 @@ public:
 private:
     gl::VaoRef                         mPVao[2];
     gl::TransformFeedbackObjRef        mPFeedbackObj[2];
-    gl::VboRef                         mPPositions[2], mPVelocities[2], mPEndPositions[2], mPColor[2], mPRandom;
+    gl::VboRef                         mPPositions[2], mPVelocities[2], mPEndPositions[2], mPColor[2], mPRandom, mPTexCoord;
     
     gl::GlslProgRef                    mPUpdateGlsl, mPRenderGlsl;
     
@@ -63,6 +63,7 @@ private:
     int nParticles            =  5000;
     int                     mWidth = 2;
     int                     mHeight = 2;
+    vec2                        mTester;
 };
 
 void pingVectorApp::prepare(Settings *settings)
@@ -90,6 +91,7 @@ void pingVectorApp::keyDown( KeyEvent event )
     switch (event.getCode()) {
         case KeyEvent::KEY_s:
             loadShaders();
+            mCam.lookAt( vec3( 0, 500, 0 ), vec3( 0, 0, 0 ) );
             break;
         default:
             break;
@@ -115,7 +117,10 @@ void pingVectorApp::update()
     gl::ScopedState        stateScope( GL_RASTERIZER_DISCARD, true );
     
     mPUpdateGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
-    
+    vec2 mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);
+    //    console() << mouse << endl;
+    mTester = mPerlin.dnoise( 0.0 , getElapsedSeconds()*0.5f)* 0.1f + vec2(0.5f);
+    mPUpdateGlsl->uniform( "Mouse",  mTester);
     // Opposite TransformFeedbackObj to catch the calculated values
     // In the opposite buffer
     mPFeedbackObj[1-mDrawBuff]->bind();
@@ -131,23 +136,30 @@ void pingVectorApp::draw()
 {
     // clear out the window with black
     gl::clear( Color( 0, 0, 0 ) );
-    static float rotateRadians = 0.0f;
-    rotateRadians += 0.01f;
+    //    static float rotateRadians = 0.0f;
+    //    rotateRadians += 0.01f;
     
-    gl::ScopedVao            vaoScope( mPVao[1-mDrawBuff] );
-    gl::ScopedGlslProg        glslScope( mPRenderGlsl );
-    gl::ScopedState            stateScope( GL_PROGRAM_POINT_SIZE, true );
-    gl::ScopedBlend            blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    gl::ScopedBlendAdditive blend;
+    
     
     gl::pushMatrices();
     gl::setMatrices( mCam );
     //    gl::multModelMatrix( rotate( rotateRadians, vec3( 0, 1, 0 ) ) );
-    
-    mPRenderGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
-    gl::setDefaultShaderVars();
-    gl::drawArrays( GL_POINTS, 0, nParticles );
-    
+    gl::pushMatrices();
+    gl::color(1.0, 0.5, 0.2);
+    gl::rotate(M_PI/2, vec3(1.0,0.0,0.0));
+    gl::drawSolidCircle((mTester - vec2(0.5)) * vec2(mWidth, mHeight), 0.5f, 30);
+    gl::popMatrices();
+    {
+        gl::ScopedVao            vaoScope( mPVao[1-mDrawBuff] );
+        gl::ScopedGlslProg        glslScope( mPRenderGlsl );
+        //    gl::ScopedState            stateScope( GL_PROGRAM_POINT_SIZE, true );
+        //    gl::ScopedBlend            blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        gl::ScopedBlendAdditive blend;
+        gl::color(1.0, 1.0, 1.0);
+        mPRenderGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
+        gl::setDefaultShaderVars();
+        gl::drawArrays( GL_POINTS, 0, nParticles );
+    }
     gl::popMatrices();
 }
 
@@ -180,8 +192,8 @@ void pingVectorApp::loadShaders()
         .attribLocation( "VertexEndPosition",         PositionEndIndex )
         .attribLocation( "VertexVelocity",            VelocityIndex )
         .attribLocation( "VertexColor",               ColorIndex )
-        .attribLocation( "VertexRandom",    RandomIndex );
-//        .attribLocation( "VertexTexCoord",    InitialVelocityIndex );
+        .attribLocation( "VertexRandom",    RandomIndex )
+        .attribLocation( "VertexTexCoord",    TexCoordIndex );
         
         mPUpdateGlsl = ci::gl::GlslProg::create( mUpdateParticleGlslFormat );
     }
@@ -208,7 +220,7 @@ void pingVectorApp::loadShaders()
         console() << "PARTICLE RENDER GLSL ERROR: " << ex.what() << std::endl;
     }
     
-//    mPRenderGlsl->uniform( "ParticleTex", 0 );
+    //    mPRenderGlsl->uniform( "ParticleTex", 0 );
     mPRenderGlsl->uniform( "MinParticleSize", 1.0f );
     mPRenderGlsl->uniform( "MaxParticleSize", 64.0f );
     mPRenderGlsl->uniform( "ParticleLifetime", 3.0f );
@@ -218,16 +230,19 @@ void pingVectorApp::loadBuffers()
 {
     // Initialize positions
     std::vector<vec3> positions( nParticles, vec3( 0.0f ) );
+    std::vector<vec2> texcoord( nParticles, vec2( 0.0f ) );
     int i = 0;
     for( int x = 0; x < mWidth; ++x ) {
         for( int z = 0; z < mHeight; ++z ) {
-            positions[i++] = vec3( (x - mWidth / 2.0f), 0.0f, (z - mHeight / 2.0f));
-//            *vertColorIter++ = vec3( 1.0f );
-//            const float u = float( x ) / mWidth;
-//            const float v = float( z ) / mHeight;
-//            *vertCoordIter++ = vec2( u, v );
+            positions[i] = vec3( (x - mWidth / 2.0f), 0.0f, (z - mHeight / 2.0f));
+            //            *vertColorIter++ = vec3( 1.0f );
+            const float u = float( x ) / mWidth;
+            const float v = float( z ) / mHeight;
+            texcoord[i++] = vec2( u, v );
         }
     }
+    
+    mPTexCoord = ci::gl::Vbo::create( GL_ARRAY_BUFFER, texcoord.size() * sizeof(vec2), texcoord.data(), GL_STATIC_DRAW );
     
     // Create Position Vbo with the initial position data
     mPPositions[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, positions.size() * sizeof(vec3), positions.data(), GL_STATIC_DRAW );
@@ -255,9 +270,6 @@ void pingVectorApp::loadBuffers()
     mPColor[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, colors.size() * sizeof(vec4), nullptr, GL_STATIC_DRAW );
     
     std::vector<float> randoms( nParticles, 1000.0f );
-//    for(auto r:randoms){
-//        r = randFloat(500, 1000);
-//    }
     for( i = 0; i < nParticles; i++ ) {
         randoms[i] = randFloat(1000, 2000);
     }
@@ -287,6 +299,10 @@ void pingVectorApp::loadBuffers()
         mPRandom->bind();
         ci::gl::vertexAttribPointer( RandomIndex, 1, GL_FLOAT, GL_FALSE, 0, 0 );
         ci::gl::enableVertexAttribArray( RandomIndex );
+        
+        mPTexCoord->bind();
+        ci::gl::vertexAttribPointer( TexCoordIndex, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+        ci::gl::enableVertexAttribArray( TexCoordIndex );
         
         // Create a TransformFeedbackObj, which is similar to Vao
         // It's used to capture the output of a glsl and uses the

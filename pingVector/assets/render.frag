@@ -1,13 +1,16 @@
 #version 330
 #extension all : warn
 
-//uniform sampler2D ParticleTex;
+#include "util.glsl"
 
+//uniform sampler2D ParticleTex;
+uniform float Time;
 //in float Transp;
 in VertexData{
     vec2 mTexCoord;
     float len;
     float width;
+    float random;
 //    vec3 mColor;
 } VertexIn;
 out vec4 FragColor;
@@ -40,9 +43,9 @@ void main() {
 //    FragColor.a = 1.0;
 //    FragColor.a -= .1;
 //    float box = box(VertexIn.mTexCoord, vec2(1.0));
-    float circle0 = circle(vec2((VertexIn.mTexCoord.x - 0.5) * 10.0, VertexIn.mTexCoord.y), 0.5);
+    float circle0 = circle(vec2((VertexIn.mTexCoord.x - 0.9) * 10.0, VertexIn.mTexCoord.y), 0.5);
     float box = box(vec2(VertexIn.mTexCoord.x + 0.05, VertexIn.mTexCoord.y), vec2(1.0));
     float circle = circle(vec2((VertexIn.mTexCoord.x - 0.9) * 10.0, VertexIn.mTexCoord.y), 1.0);
-    float shape = max(box, circle) + circle0;
-    FragColor = vec4(mix(blue, green, VertexIn.len/12.5), 0.5 * VertexIn.mTexCoord.x) * shape;
+    float shape = max(box, circle);
+    FragColor = vec4(mix(blue, green, VertexIn.len/12.5) + circle0 * vec3(1.0), 0.9 * VertexIn.mTexCoord.x) * shape;
 }
