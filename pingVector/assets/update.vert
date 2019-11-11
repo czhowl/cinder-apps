@@ -19,7 +19,9 @@ uniform float Time; // Time
 uniform float H;    // Elapsed time between frames
 uniform vec3 Accel; // Particle Acceleration
 uniform float ParticleLifetime; // Particle lifespan
+uniform vec2 Tester;
 uniform vec2 Mouse;
+uniform float Click;
 
 void main() {
     
@@ -29,16 +31,20 @@ void main() {
     vec3 acce;
     
     
-    acce = (curlNoise(vec3((VertexTexCoord.x * 1.5), (VertexTexCoord.y * 1.5), Time * 0.05)) + 0) * VertexRandom;
-    vec2 dir = VertexTexCoord - Mouse;
-//    acce += (1.0-smoothstep(0.0, 0.2, length(dir))) * vec3(dir.x, 0.0, dir.y) * 10000000.0;
-//    acce = vec3(0);
+    acce = (curlNoise(vec3((VertexPosition.x * 0.02), (VertexPosition.z * 0.02), Time * 0.02)) + 0) * VertexRandom * 0.1;
+    
+    vec2 m = VertexTexCoord - Mouse;
+//    acce += smoothstep(10.0, 0.0, Time - Click) *
+    acce += smoothstep(10.0, 0.0, Time - Click) * vec3(0.0,1000.0,0.0) * smoothstep(0.1, 0.0, length(m));
+    vec2 dir = VertexTexCoord - Tester;
+
     Velocity += acce * H;
     if(length(Velocity) > 200.0) Velocity = 200.0 * normalize(Velocity);
     EndPosition += Velocity * H;
     EndPosition = EndPosition * 2.0 + snoiseVec3(vec3(VertexPosition.xz, Time * (500/VertexRandom))) * 0.8 * length(vec2(EndPosition.x,EndPosition.z));
     EndPosition += (1.0-smoothstep(0.0, 0.1, length(dir))) * vec3(dir.x, 0.0, dir.y) * length(vec2(EndPosition.x,EndPosition.z)) * 10.0;
     if(length(EndPosition) > 10.0) EndPosition = 10.0 * normalize(EndPosition);
+    EndPosition *= smoothstep(0.0, 5.0, EndPosition.y);
     
     Color = VertexColor;
 }

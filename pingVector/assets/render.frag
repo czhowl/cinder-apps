@@ -15,8 +15,8 @@ in VertexData{
 } VertexIn;
 out vec4 FragColor;
 
-const vec3 blue = vec3(0.1, 0.2, 1.0);
-const vec3 green = vec3(0.4, 1.0, 0.6);
+const vec3 blue = vec3(0.1, 0.2, 0.8);
+const vec3 green = vec3(0.4, 1.0, 0.3);
 
 float circle(in vec2 _st, in float _radius){
     vec2 dist = _st-vec2(0.5);

@@ -31,6 +31,7 @@ public:
     static void prepare(Settings *settings);
     void setup() override;
     void mouseDown( MouseEvent event ) override;
+    void mouseWheel( MouseEvent event ) override;
     void update() override;
     void draw() override;
     void keyDown(KeyEvent event) override;
@@ -60,7 +61,7 @@ private:
     gl::GlslProgRef        mInstancingGlsl;
     gl::VboRef            mInstanceDataVbo;
     
-    int nParticles            =  5000;
+    int nParticles            =  10000;
     int                     mWidth = 2;
     int                     mHeight = 2;
     vec2                        mTester;
@@ -79,7 +80,7 @@ void pingVectorApp::setup()
     mHeight = mWidth;
     nParticles = mWidth * mHeight;
     mDrawBuff = 1;
-    mCamUI = CameraUi(&mCam, getWindow() );
+    mCamUI = CameraUi(&mCam);
     mCam.setPerspective( 10.0f, getWindowAspectRatio(), .01f, 1000.0f );
     mCam.lookAt( vec3( 0, 500, 0 ), vec3( 0, 0, 0 ) );
     
@@ -98,8 +99,17 @@ void pingVectorApp::keyDown( KeyEvent event )
     }
 }
 
+void pingVectorApp::mouseWheel( MouseEvent event )
+{
+    mCamUI.mouseWheel( event );
+}
+
 void pingVectorApp::mouseDown( MouseEvent event )
 {
+    console() << getElapsedFrames() / 60.0f << endl;;
+    mPUpdateGlsl->uniform( "Click",  getElapsedFrames() / 60.0f);
+    vec2 mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);
+    mPUpdateGlsl->uniform( "Mouse",  mouse);
 }
 
 void pingVectorApp::update()
@@ -117,10 +127,10 @@ void pingVectorApp::update()
     gl::ScopedState        stateScope( GL_RASTERIZER_DISCARD, true );
     
     mPUpdateGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
-    vec2 mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);
+    
     //    console() << mouse << endl;
-    mTester = mPerlin.dnoise( 0.0 , getElapsedSeconds()*0.5f)* 0.1f + vec2(0.5f);
-    mPUpdateGlsl->uniform( "Mouse",  mTester);
+    mTester = mPerlin.dnoise( 0.0 , getElapsedSeconds()*0.3f)* 0.2f + vec2(0.5f);
+    mPUpdateGlsl->uniform( "Tester",  mTester);
     // Opposite TransformFeedbackObj to catch the calculated values
     // In the opposite buffer
     mPFeedbackObj[1-mDrawBuff]->bind();
@@ -135,7 +145,7 @@ void pingVectorApp::update()
 void pingVectorApp::draw()
 {
     // clear out the window with black
-    gl::clear( Color( 0, 0, 0 ) );
+    gl::clear( Color( 0.04, 0.05, 0.16 ) );
     //    static float rotateRadians = 0.0f;
     //    rotateRadians += 0.01f;
     
@@ -204,6 +214,7 @@ void pingVectorApp::loadShaders()
     mPUpdateGlsl->uniform( "H", 1.0f / 60.0f );
     mPUpdateGlsl->uniform( "Accel", vec3( 0.0f ) );
     mPUpdateGlsl->uniform( "ParticleLifetime", 3.0f );
+    mPUpdateGlsl->uniform( "Click",  -10.0f);
     
     try {
         ci::gl::GlslProg::Format mRenderParticleGlslFormat;
