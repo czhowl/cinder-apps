@@ -65,6 +65,9 @@ private:
     int                     mWidth = 2;
     int                     mHeight = 2;
     vec2                        mTester;
+    float                       mSit = 0.0f;
+    
+    gl::FboRef                  mColorFbo;
 };
 
 void pingVectorApp::prepare(Settings *settings)
@@ -82,8 +85,19 @@ void pingVectorApp::setup()
     mDrawBuff = 1;
     mCamUI = CameraUi(&mCam);
     mCam.setPerspective( 10.0f, getWindowAspectRatio(), .01f, 1000.0f );
-    mCam.lookAt( vec3( 0, 500, 0 ), vec3( 0, 0, 0 ) );
+    mCam.lookAt( vec3( 0, 550, 0 ), vec3( 0, 0, 0 ) );
     
+    // FBO
+    gl::Fbo::Format fboFormat;
+    fboFormat.setColorTextureFormat( gl::Texture2d::Format().internalFormat( GL_RGBA32F ) );
+    mColorFbo = gl::Fbo::create( mWidth, mHeight, fboFormat );
+    {
+        gl::ScopedFramebuffer scpFbo( mColorFbo );
+        gl::ScopedViewport    scpViewport( mColorFbo->getSize() );
+        gl::clear();
+
+    }
+    // Ocean
     loadShaders();
     loadBuffers();
 }
@@ -92,7 +106,11 @@ void pingVectorApp::keyDown( KeyEvent event )
     switch (event.getCode()) {
         case KeyEvent::KEY_s:
             loadShaders();
-            mCam.lookAt( vec3( 0, 500, 0 ), vec3( 0, 0, 0 ) );
+            //            mCam.lookAt( vec3( 0, 500, 0 ), vec3( 0, 0, 0 ) );
+            break;
+        case KeyEvent::KEY_SPACE:
+            mSit = 1.0f - mSit;
+            mPUpdateGlsl->uniform( "Sit",  mSit);
             break;
         default:
             break;
@@ -101,15 +119,13 @@ void pingVectorApp::keyDown( KeyEvent event )
 
 void pingVectorApp::mouseWheel( MouseEvent event )
 {
-    mCamUI.mouseWheel( event );
+//    mCamUI.mouseWheel( event );
 }
 
 void pingVectorApp::mouseDown( MouseEvent event )
 {
-    console() << getElapsedFrames() / 60.0f << endl;;
+//    console() << getElapsedFrames() / 60.0f << endl;;
     mPUpdateGlsl->uniform( "Click",  getElapsedFrames() / 60.0f);
-    vec2 mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);
-    mPUpdateGlsl->uniform( "Mouse",  mouse);
 }
 
 void pingVectorApp::update()
@@ -129,6 +145,10 @@ void pingVectorApp::update()
     mPUpdateGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
     
     //    console() << mouse << endl;
+    
+    vec2 mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);
+    mPUpdateGlsl->uniform( "Mouse",  mouse);
+    
     mTester = mPerlin.dnoise( 0.0 , getElapsedSeconds()*0.3f)* 0.2f + vec2(0.5f);
     mPUpdateGlsl->uniform( "Tester",  mTester);
     // Opposite TransformFeedbackObj to catch the calculated values
@@ -215,12 +235,13 @@ void pingVectorApp::loadShaders()
     mPUpdateGlsl->uniform( "Accel", vec3( 0.0f ) );
     mPUpdateGlsl->uniform( "ParticleLifetime", 3.0f );
     mPUpdateGlsl->uniform( "Click",  -10.0f);
+    mPUpdateGlsl->uniform( "Sit",  mSit);
     
     try {
         ci::gl::GlslProg::Format mRenderParticleGlslFormat;
         // This being the render glsl, we provide a fragment shader.
         mRenderParticleGlslFormat.vertex( loadAsset( "render.vert" ) )
-        .fragment( loadAsset( "render.frag" ) ).geometry( loadAsset( "test.geom" ) )
+        .fragment( loadAsset( "render.frag" ) ).geometry( loadAsset( "render.geom" ) )
         .attribLocation( "VertexPosition",            PositionIndex )
         .attribLocation( "VertexEndPosition",         PositionEndIndex )
         .attribLocation( "VertexColor",               ColorIndex );;

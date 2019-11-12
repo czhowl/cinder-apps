@@ -11,6 +11,7 @@ in VertexData{
     float len;
     float width;
     float random;
+    vec3 color;
 //    vec3 mColor;
 } VertexIn;
 out vec4 FragColor;
@@ -47,5 +48,7 @@ void main() {
     float box = box(vec2(VertexIn.mTexCoord.x + 0.05, VertexIn.mTexCoord.y), vec2(1.0));
     float circle = circle(vec2((VertexIn.mTexCoord.x - 0.9) * 10.0, VertexIn.mTexCoord.y), 1.0);
     float shape = max(box, circle);
-    FragColor = vec4(mix(blue, green, VertexIn.len/12.5) + circle0 * vec3(1.0), 0.9 * VertexIn.mTexCoord.x) * shape;
+    FragColor = vec4(mix(blue, VertexIn.color, VertexIn.len/12.5)
+                     + circle0 * vec3(sin(Time*VertexIn.random) * 0.5 + 0.5),
+                     0.9 * VertexIn.mTexCoord.x)* shape;
 }

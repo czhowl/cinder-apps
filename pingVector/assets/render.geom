@@ -9,6 +9,7 @@ uniform mat4 ciModelViewProjection;
 
 in vec3 vEnd[];
 in float vRandom[];
+in vec3 vColor[];
 //in float agePct[];
 //in vec4  Pcolor[];
 out VertexData{
@@ -16,6 +17,7 @@ out VertexData{
     float len;
     float width;
     float random;
+    vec3 color;
 //    vec3 mColor;
 } VertexOut;
 //out vec4  color;
@@ -32,6 +34,7 @@ void main() {
     VertexOut.len = length(vec4(vEnd[0].x, 0.0, vEnd[0].z, 0.0));
     VertexOut.width = width;
     VertexOut.random = 0.4 + vRandom[0];
+    VertexOut.color = vColor[0];
     VertexOut.mTexCoord = vec2( 0, 0 );
     gl_Position = ciModelViewProjection * pos1;
     EmitVertex();

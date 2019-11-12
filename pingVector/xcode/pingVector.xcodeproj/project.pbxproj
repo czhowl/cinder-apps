@@ -20,7 +20,7 @@
 		5CC22D81237631CD00578821 /* render.frag in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D79237631CD00578821 /* render.frag */; };
 		5CC22D82237631CD00578821 /* instancing.frag in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D7A237631CD00578821 /* instancing.frag */; };
 		5CC22D84237631CD00578821 /* update.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D7C237631CD00578821 /* update.vert */; };
-		5CC22D85237631CD00578821 /* test.geom in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D7D237631CD00578821 /* test.geom */; };
+		5CC22D85237631CD00578821 /* render.geom in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D7D237631CD00578821 /* render.geom */; };
 		5CC22D86237631CD00578821 /* instancing.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D7E237631CD00578821 /* instancing.vert */; };
 		5CC22D87237631CD00578821 /* render.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D7F237631CD00578821 /* render.vert */; };
 		5CC22D8A237721EA00578821 /* util.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D89237721E900578821 /* util.glsl */; };
@@ -46,7 +46,7 @@
 		5CC22D79237631CD00578821 /* render.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = render.frag; sourceTree = "<group>"; };
 		5CC22D7A237631CD00578821 /* instancing.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = instancing.frag; sourceTree = "<group>"; };
 		5CC22D7C237631CD00578821 /* update.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = update.vert; sourceTree = "<group>"; };
-		5CC22D7D237631CD00578821 /* test.geom */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = test.geom; sourceTree = "<group>"; };
+		5CC22D7D237631CD00578821 /* render.geom */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = render.geom; sourceTree = "<group>"; };
 		5CC22D7E237631CD00578821 /* instancing.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = instancing.vert; sourceTree = "<group>"; };
 		5CC22D7F237631CD00578821 /* render.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = render.vert; sourceTree = "<group>"; };
 		5CC22D89237721E900578821 /* util.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = util.glsl; sourceTree = "<group>"; };
@@ -179,7 +179,7 @@
 				5CC22D7C237631CD00578821 /* update.vert */,
 				5CC22D7E237631CD00578821 /* instancing.vert */,
 				5CC22D7F237631CD00578821 /* render.vert */,
-				5CC22D7D237631CD00578821 /* test.geom */,
+				5CC22D7D237631CD00578821 /* render.geom */,
 				5CC22D79237631CD00578821 /* render.frag */,
 			);
 			name = assets;
@@ -245,7 +245,7 @@
 				DA53F19C592C4F8E8C35B8B7 /* CinderApp.icns in Resources */,
 				5CC22D8A237721EA00578821 /* util.glsl in Resources */,
 				5CC22D81237631CD00578821 /* render.frag in Resources */,
-				5CC22D85237631CD00578821 /* test.geom in Resources */,
+				5CC22D85237631CD00578821 /* render.geom in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

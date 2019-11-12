@@ -22,29 +22,38 @@ uniform float ParticleLifetime; // Particle lifespan
 uniform vec2 Tester;
 uniform vec2 Mouse;
 uniform float Click;
+uniform float Sit;
+
+const vec3 green = vec3(0.4, 1.0, 0.0);
+const vec3 red = vec3(1.0, 1.0, 0.0);
+const vec3 blue = vec3(0.0, 1.0, 1.0);
 
 void main() {
     
     // Update position & velocity for next frame
     Position = VertexPosition;
     Velocity = VertexVelocity;
+    Color = VertexColor;
+    EndPosition = VertexEndPosition;
+//    Color = vec4(1.0);
+//    Color += vec4(1.0);
+    Color += (vec4(green,1.0) - Color) * 0.05;
     vec3 acce;
     
     
-    acce = (curlNoise(vec3((VertexPosition.x * 0.02), (VertexPosition.z * 0.02), Time * 0.02)) + 0) * VertexRandom * 0.1;
-    
+    acce = (curlNoise(vec3((VertexPosition.x * 0.02), (VertexPosition.z * 0.02), Time * 0.01)) + 0) * VertexRandom * 0.1;
     vec2 m = VertexTexCoord - Mouse;
-//    acce += smoothstep(10.0, 0.0, Time - Click) *
-    acce += smoothstep(10.0, 0.0, Time - Click) * vec3(0.0,1000.0,0.0) * smoothstep(0.1, 0.0, length(m));
+    acce += vec3(0.0,1000.0,-1000.0) * smoothstep(0.1, 0.0, length(m));
+    acce += smoothstep(1.0, 0.0, Time - Click) * smoothstep(0.1, 0.0, length(m)) * vec3(m.x,0.0,m.y) * 100000.0;
     vec2 dir = VertexTexCoord - Tester;
 
     Velocity += acce * H;
     if(length(Velocity) > 200.0) Velocity = 200.0 * normalize(Velocity);
     EndPosition += Velocity * H;
-    EndPosition = EndPosition * 2.0 + snoiseVec3(vec3(VertexPosition.xz, Time * (500/VertexRandom))) * 0.8 * length(vec2(EndPosition.x,EndPosition.z));
+    EndPosition = EndPosition * 5.0 + snoiseVec3(vec3(VertexPosition.xz, Time * (500/VertexRandom))) * 0.8 * length(vec2(EndPosition.x,EndPosition.z));
     EndPosition += (1.0-smoothstep(0.0, 0.1, length(dir))) * vec3(dir.x, 0.0, dir.y) * length(vec2(EndPosition.x,EndPosition.z)) * 10.0;
-    if(length(EndPosition) > 10.0) EndPosition = 10.0 * normalize(EndPosition);
+    if(length(EndPosition) > 6.0) EndPosition = 6.0 * normalize(EndPosition);
     EndPosition *= smoothstep(0.0, 5.0, EndPosition.y);
-    
-    Color = VertexColor;
+//    smoothstep(10.0, 0.0, Time - Click) *
+    Color += vec4((red * (1.0 - Sit)) + (blue * Sit) -green,0.0) * smoothstep(0.1, 0.0, length(m));
 }
