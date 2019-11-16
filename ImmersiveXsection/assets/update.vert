@@ -39,7 +39,7 @@ void main() {
     vec2 m = VertexTexCoord - Mouse;
 //    Color = vec4(1.0);
 //    Color += vec4(1.0);
-    Color += (vec4(white, 1.0) - Color) * 0.05 * smoothstep(0.0, 0.1, length(m));
+    Color += (vec4(green, 1.0) - Color) * 0.05 * smoothstep(0.0, 0.1, length(m));
     Color += (vec4((red * (1.0 - Sit)) + (blue * Sit), 1.0) - Color) * smoothstep(0.1, 0.0, length(m)) * 0.05;
     
     vec3 acce;

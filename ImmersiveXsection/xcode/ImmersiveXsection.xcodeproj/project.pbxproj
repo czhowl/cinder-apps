@@ -17,15 +17,16 @@
 		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
-		5CC22D81237631CD00578821 /* render.frag in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D79237631CD00578821 /* render.frag */; };
-		5CC22D82237631CD00578821 /* instancing.frag in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D7A237631CD00578821 /* instancing.frag */; };
-		5CC22D84237631CD00578821 /* update.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D7C237631CD00578821 /* update.vert */; };
-		5CC22D85237631CD00578821 /* render.geom in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D7D237631CD00578821 /* render.geom */; };
-		5CC22D87237631CD00578821 /* render.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D7F237631CD00578821 /* render.vert */; };
-		5CC22D8A237721EA00578821 /* util.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 5CC22D89237721E900578821 /* util.glsl */; };
+		5C940E6A237E568B00C73BA5 /* Grass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C940E68237E568B00C73BA5 /* Grass.cpp */; };
+		5C940E6B237E568B00C73BA5 /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C940E69237E568B00C73BA5 /* Particle.cpp */; };
+		5C940E7D237E569F00C73BA5 /* render.frag in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E78237E569F00C73BA5 /* render.frag */; };
+		5C940E7E237E569F00C73BA5 /* render.geom in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E79237E569F00C73BA5 /* render.geom */; };
+		5C940E7F237E569F00C73BA5 /* update.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E7A237E569F00C73BA5 /* update.vert */; };
+		5C940E80237E569F00C73BA5 /* render.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E7B237E569F00C73BA5 /* render.vert */; };
+		5C940E81237E569F00C73BA5 /* util.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E7C237E569F00C73BA5 /* util.glsl */; };
+		731E4AED33C84985BA4ABED9 /* ImmersiveXsectionApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E503B9A0E1C47AE89BF90FB /* ImmersiveXsectionApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		C071AD48EEFC4C89A2548EAA /* pingVectorApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2DBA8FAC98E4F418DA0BD26 /* pingVectorApp.cpp */; };
-		DA53F19C592C4F8E8C35B8B7 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = D09DD6B3BC594F83A4D78550 /* CinderApp.icns */; };
+		9EF72B5C66B340CA9F3C372E /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 45C288052F2E4F7EB5D0F72F /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,19 +42,22 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		45C288052F2E4F7EB5D0F72F /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
-		5CC22D79237631CD00578821 /* render.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = render.frag; sourceTree = "<group>"; };
-		5CC22D7A237631CD00578821 /* instancing.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = instancing.frag; sourceTree = "<group>"; };
-		5CC22D7C237631CD00578821 /* update.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = update.vert; sourceTree = "<group>"; };
-		5CC22D7D237631CD00578821 /* render.geom */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = render.geom; sourceTree = "<group>"; };
-		5CC22D7F237631CD00578821 /* render.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = render.vert; sourceTree = "<group>"; };
-		5CC22D89237721E900578821 /* util.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = util.glsl; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* pingVector.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pingVector.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8FD0ED3C84774EDE9EAC1DEF /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
-		91523560076F40C5ACEFA8B3 /* pingVector_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = pingVector_Prefix.pch; sourceTree = "<group>"; };
-		CF3385FD504E432F9A2620A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D09DD6B3BC594F83A4D78550 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
-		D2DBA8FAC98E4F418DA0BD26 /* pingVectorApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = pingVectorApp.cpp; path = ../src/pingVectorApp.cpp; sourceTree = "<group>"; };
+		5C940E66237E568B00C73BA5 /* Grass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Grass.h; path = ../src/Grass.h; sourceTree = "<group>"; };
+		5C940E67237E568B00C73BA5 /* Particle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Particle.h; path = ../src/Particle.h; sourceTree = "<group>"; };
+		5C940E68237E568B00C73BA5 /* Grass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Grass.cpp; path = ../src/Grass.cpp; sourceTree = "<group>"; };
+		5C940E69237E568B00C73BA5 /* Particle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Particle.cpp; path = ../src/Particle.cpp; sourceTree = "<group>"; };
+		5C940E78237E569F00C73BA5 /* render.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = render.frag; sourceTree = "<group>"; };
+		5C940E79237E569F00C73BA5 /* render.geom */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = render.geom; sourceTree = "<group>"; };
+		5C940E7A237E569F00C73BA5 /* update.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = update.vert; sourceTree = "<group>"; };
+		5C940E7B237E569F00C73BA5 /* render.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = render.vert; sourceTree = "<group>"; };
+		5C940E7C237E569F00C73BA5 /* util.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = util.glsl; sourceTree = "<group>"; };
+		5E503B9A0E1C47AE89BF90FB /* ImmersiveXsectionApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = ImmersiveXsectionApp.cpp; path = ../src/ImmersiveXsectionApp.cpp; sourceTree = "<group>"; };
+		600A6D551F2542389FF7DFB6 /* ImmersiveXsection_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ImmersiveXsection_Prefix.pch; sourceTree = "<group>"; };
+		7381370D3B574357A8829A6A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7D021681D7D9493B84CB354C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* ImmersiveXsection.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImmersiveXsection.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,7 +92,11 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				D2DBA8FAC98E4F418DA0BD26 /* pingVectorApp.cpp */,
+				5C940E68237E568B00C73BA5 /* Grass.cpp */,
+				5C940E66237E568B00C73BA5 /* Grass.h */,
+				5C940E69237E568B00C73BA5 /* Particle.cpp */,
+				5C940E67237E568B00C73BA5 /* Particle.h */,
+				5E503B9A0E1C47AE89BF90FB /* ImmersiveXsectionApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -123,30 +131,30 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* pingVector.app */,
+				8D1107320486CEB800E47090 /* ImmersiveXsection.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* pingVector */ = {
+		29B97314FDCFA39411CA2CEA /* ImmersiveXsection */ = {
 			isa = PBXGroup;
 			children = (
-				5CC22D78237631CD00578821 /* assets */,
 				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
+				5C940E77237E569F00C73BA5 /* assets */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
-			name = pingVector;
+			name = ImmersiveXsection;
 			sourceTree = "<group>";
 		};
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				8FD0ED3C84774EDE9EAC1DEF /* Resources.h */,
-				91523560076F40C5ACEFA8B3 /* pingVector_Prefix.pch */,
+				7D021681D7D9493B84CB354C /* Resources.h */,
+				600A6D551F2542389FF7DFB6 /* ImmersiveXsection_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -154,8 +162,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				D09DD6B3BC594F83A4D78550 /* CinderApp.icns */,
-				CF3385FD504E432F9A2620A1 /* Info.plist */,
+				45C288052F2E4F7EB5D0F72F /* CinderApp.icns */,
+				7381370D3B574357A8829A6A /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -169,15 +177,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		5CC22D78237631CD00578821 /* assets */ = {
+		5C940E77237E569F00C73BA5 /* assets */ = {
 			isa = PBXGroup;
 			children = (
-				5CC22D7A237631CD00578821 /* instancing.frag */,
-				5CC22D89237721E900578821 /* util.glsl */,
-				5CC22D7C237631CD00578821 /* update.vert */,
-				5CC22D7F237631CD00578821 /* render.vert */,
-				5CC22D7D237631CD00578821 /* render.geom */,
-				5CC22D79237631CD00578821 /* render.frag */,
+				5C940E78237E569F00C73BA5 /* render.frag */,
+				5C940E79237E569F00C73BA5 /* render.geom */,
+				5C940E7A237E569F00C73BA5 /* update.vert */,
+				5C940E7B237E569F00C73BA5 /* render.vert */,
+				5C940E7C237E569F00C73BA5 /* util.glsl */,
 			);
 			name = assets;
 			path = ../assets;
@@ -186,9 +193,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* pingVector */ = {
+		8D1107260486CEB800E47090 /* ImmersiveXsection */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "pingVector" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "ImmersiveXsection" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -198,10 +205,10 @@
 			);
 			dependencies = (
 			);
-			name = pingVector;
+			name = ImmersiveXsection;
 			productInstallPath = "$(HOME)/Applications";
-			productName = pingVector;
-			productReference = 8D1107320486CEB800E47090 /* pingVector.app */;
+			productName = ImmersiveXsection;
+			productReference = 8D1107320486CEB800E47090 /* ImmersiveXsection.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -211,7 +218,7 @@
 			isa = PBXProject;
 			attributes = {
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pingVector" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "ImmersiveXsection" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -221,11 +228,11 @@
 				French,
 				German,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* pingVector */;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* ImmersiveXsection */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1107260486CEB800E47090 /* pingVector */,
+				8D1107260486CEB800E47090 /* ImmersiveXsection */,
 			);
 		};
 /* End PBXProject section */
@@ -235,13 +242,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5CC22D82237631CD00578821 /* instancing.frag in Resources */,
-				5CC22D84237631CD00578821 /* update.vert in Resources */,
-				5CC22D87237631CD00578821 /* render.vert in Resources */,
-				DA53F19C592C4F8E8C35B8B7 /* CinderApp.icns in Resources */,
-				5CC22D8A237721EA00578821 /* util.glsl in Resources */,
-				5CC22D81237631CD00578821 /* render.frag in Resources */,
-				5CC22D85237631CD00578821 /* render.geom in Resources */,
+				9EF72B5C66B340CA9F3C372E /* CinderApp.icns in Resources */,
+				5C940E80237E569F00C73BA5 /* render.vert in Resources */,
+				5C940E7F237E569F00C73BA5 /* update.vert in Resources */,
+				5C940E81237E569F00C73BA5 /* util.glsl in Resources */,
+				5C940E7D237E569F00C73BA5 /* render.frag in Resources */,
+				5C940E7E237E569F00C73BA5 /* render.geom in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,7 +258,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C071AD48EEFC4C89A2548EAA /* pingVectorApp.cpp in Sources */,
+				5C940E6A237E568B00C73BA5 /* Grass.cpp in Sources */,
+				5C940E6B237E568B00C73BA5 /* Particle.cpp in Sources */,
+				731E4AED33C84985BA4ABED9 /* ImmersiveXsectionApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,7 +277,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = pingVector_Prefix.pch;
+				GCC_PREFIX_HEADER = ImmersiveXsection_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -279,7 +287,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = pingVector;
+				PRODUCT_NAME = ImmersiveXsection;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
@@ -296,7 +304,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = pingVector_Prefix.pch;
+				GCC_PREFIX_HEADER = ImmersiveXsection_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"NDEBUG=1",
 					"$(inherited)",
@@ -306,7 +314,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = pingVector;
+				PRODUCT_NAME = ImmersiveXsection;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
@@ -350,7 +358,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "pingVector" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "ImmersiveXsection" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
@@ -359,7 +367,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pingVector" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "ImmersiveXsection" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
