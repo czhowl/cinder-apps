@@ -17,7 +17,7 @@ Particle::Particle(vec2 position, vec2 velocity, float hue){
     mMinSpeedSquared = mMinSpeed * mMinSpeed;
     mMaxForce = Rand::randFloat(0.00001f, 0.0001f);
     mRadius = 20.0f;
-    mDecay = 0.99f;
+    mDecay = 0.995f;
     mArrive = 0.1f;
     mTailLength = 10.0f;
     mVelMag = 0.0f;
@@ -158,6 +158,53 @@ void Particle::flocking(vector<Particle> boids, float ali, float sep, float coh,
         applyForce(cohForce * coh);
         
     }
+}
+
+void Particle::checkGrass(vec2 chair, bool sit, float click, float time){
+    vec2 dir = glm::normalize(mPosition - chair);
+    float d = glm::length(mPosition - chair);
+    vec2 desired;
+    vec2 steer(0);
+    //    if (d < 0.1){
+    //        vec2 v1 = glm::normalize(dir);
+    //        vec2 v2 = glm::normalize(mVelocity);
+    //        float mag = glm::dot(vec3(v1.x, v1.y, 0.0), vec3(v2.x, v2.y, 0.0));
+    ////        if()
+    ////        desired = vec2(mMaxSpeed * dir, mMaxSpeed * dir));
+    //        desired = -dir * mMaxSpeed * mag;
+    //        steer = desired - mVelocity;
+    //        steer = glm::normalize(steer) * mMaxForce;
+    //    }
+    //    applyForce(steer);
+    //    if(!sit){
+    if (d < 0.1 && sit){
+        desired = -dir * mMaxSpeed * 0.75f;
+        steer = desired - mVelocity;
+        steer = glm::normalize(steer) * mMaxForce;
+        applyForce(steer * 1.0f);
+    }
+    
+    if (d < 0.075 && !sit){
+        desired = dir * mMaxSpeed * 0.5f;
+        steer = desired - mVelocity;
+        steer = glm::normalize(steer) * mMaxForce;
+        applyForce(steer * 1.0f);
+    }
+    
+    if (d < 0.15 && time - click < 0.2){
+        steer = dir * min((0.15f - d) * 0.003f, 0.003f);
+        //        steer = desired - mVelocity;
+        //        steer = dir * mMaxForce;
+        applyForce(steer * 1.0f);
+    }
+    //    }else{
+//    if (d < 0.1 && sit){
+//        desired = vec2(0);
+//        steer = desired - mVelocity;
+//        steer = glm::normalize(steer) * mMaxForce;
+//        applyForce(steer * (0.1f - d) * 10.0f);
+//    }
+    //    }
 }
 
 vec2 Particle::alignment (float ali, vector<Particle> boids) {

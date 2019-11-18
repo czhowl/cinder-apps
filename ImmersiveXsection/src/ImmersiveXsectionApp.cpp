@@ -20,11 +20,11 @@ const int RandomIndex              = 4;
 const int TexCoordIndex            = 5;
 
 class ImmersiveXsectionApp : public App {
-  public:
-	static void prepare(Settings *settings);
+public:
+    static void prepare(Settings *settings);
     void setup() override;
     void mouseDown( MouseEvent event ) override;
-//    void mouseWheel( MouseEvent event ) override;
+    //    void mouseWheel( MouseEvent event ) override;
     void update() override;
     void draw() override;
     void keyDown(KeyEvent event) override;
@@ -33,7 +33,7 @@ class ImmersiveXsectionApp : public App {
     void loadShaders();
     void loadTexture();
     void loadBatch();
-  private:
+private:
     gl::VaoRef                         mPVao[2];
     gl::TransformFeedbackObjRef        mPFeedbackObj[2];
     gl::VboRef                         mPPositions[2], mPVelocities[2], mPEndPositions[2], mPColor[2], mPRandom, mPTexCoord;
@@ -58,6 +58,7 @@ class ImmersiveXsectionApp : public App {
     int                     mHeight = 2;
     vec2                        mTester;
     float                       mSit = 0.0f;
+    float                       mClick = -10.0f;
     
     gl::FboRef                  mColorFbo;
     
@@ -69,7 +70,7 @@ void ImmersiveXsectionApp::prepare(Settings *settings)
 {
     settings->setTitle("XR in Real World: Immersive Xsection");
     settings->setWindowSize(800, 800);
-//    settings->disableFrameRate();
+    //    settings->disableFrameRate();
 }
 
 void ImmersiveXsectionApp::setup()
@@ -90,13 +91,13 @@ void ImmersiveXsectionApp::setup()
         gl::ScopedFramebuffer scpFbo( mColorFbo );
         gl::ScopedViewport    scpViewport( mColorFbo->getSize() );
         gl::clear();
-
+        
     }
     // Ocean
     loadShaders();
     loadBuffers();
     
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < 30; i++){
         mP.push_back(Particle(vec2(randFloat(-0.5, 0.5),randFloat(-0.5, 0.5)), vec2(randFloat(-0.1, 0.1),randFloat(-0.1, 0.1)), 0.5));
     }
     
@@ -104,7 +105,8 @@ void ImmersiveXsectionApp::setup()
 
 void ImmersiveXsectionApp::mouseDown( MouseEvent event )
 {
-    mPUpdateGlsl->uniform( "Click",  getElapsedFrames() / 60.0f);
+    mClick = getElapsedFrames() / 60.0f;
+    mPUpdateGlsl->uniform( "Click", mClick);
 }
 
 void ImmersiveXsectionApp::keyDown( KeyEvent event )
@@ -125,6 +127,22 @@ void ImmersiveXsectionApp::keyDown( KeyEvent event )
 
 void ImmersiveXsectionApp::update()
 {
+    vec2 mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);
+    vec2 fishPos[30];
+    vec2 chair = mouse - vec2(0.5);
+    float time = getElapsedFrames() / 60.0f ;
+    // update fishes
+    for(int i = 0; i < mP.size(); i++){
+        //        vec2 seek = mP[i].seek(mouse - vec2(0.5));
+        vec2 bound = mP[i].boundary(0.45f, 0.45f);
+        mP[i].applyForce(bound * 2.0f);
+        //                 ali, sep, coh, aliDist, sepDist, cohDist
+        mP[i].flocking(mP, 0.1f, 1.3f, 0.1f, 0.1f, 0.03f, 0.05f);
+        mP[i].checkGrass(chair, mSit, mClick, time);
+        mP[i].update();
+        fishPos[i] = mP[i].getPosition();
+    }
+    
     // This equation just reliably swaps all concerned buffers
     mDrawBuff = 1 - mDrawBuff;
     
@@ -137,15 +155,15 @@ void ImmersiveXsectionApp::update()
     // move to the rasterization stage.
     gl::ScopedState        stateScope( GL_RASTERIZER_DISCARD, true );
     
-    mPUpdateGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
+    mPUpdateGlsl->uniform( "Time", time);
     
     //    console() << mouse << endl;
     
-    vec2 mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);
     mPUpdateGlsl->uniform( "Mouse",  mouse);
     
-    mTester = mPerlin.dnoise( 0.0 , getElapsedSeconds()*0.3f)* 0.2f + vec2(0.5f);
-    mPUpdateGlsl->uniform( "Tester",  mTester);
+    mPUpdateGlsl->uniform( "FishPos",  (vec2*)fishPos, 30);
+//    mTester = mPerlin.dnoise( 0.0 , getElapsedSeconds()*0.3f)* 0.2f + vec2(0.5f);
+//    mPUpdateGlsl->uniform( "Tester",  mTester);
     // Opposite TransformFeedbackObj to catch the calculated values
     // In the opposite buffer
     mPFeedbackObj[1-mDrawBuff]->bind();
@@ -155,20 +173,11 @@ void ImmersiveXsectionApp::update()
     gl::beginTransformFeedback( GL_POINTS );
     gl::drawArrays( GL_POINTS, 0, numGrass );
     gl::endTransformFeedback();
-
-    for(int i = 0; i < mP.size(); i++){
-//        vec2 seek = mP[i].seek(mouse - vec2(0.5));
-        vec2 bound = mP[i].boundary(0.45f, 0.45f);
-        mP[i].applyForce(bound * 2.0f);
-        //                 ali, sep, coh, aliDist, sepDist, cohDist
-        mP[i].flocking(mP, 1.0f, 1.3f, 1.f, 0.3f, 0.03f, 0.3f);
-        mP[i].update();
-    }
 }
 
 void ImmersiveXsectionApp::draw()
 {
-	// clear out the window with black
+    // clear out the window with black
     gl::clear( Color( 0.04, 0.05, 0.16 ) );
     
     gl::pushMatrices();
@@ -176,7 +185,7 @@ void ImmersiveXsectionApp::draw()
     gl::pushMatrices();
     gl::color(1.0, 0.5, 0.2);
     gl::rotate(M_PI/2, vec3(1.0,0.0,0.0));
-    gl::drawSolidCircle((mTester - vec2(0.5)) * vec2(mWidth, mHeight), 0.5f, 30);
+//    gl::drawSolidCircle((mTester - vec2(0.5)) * vec2(mWidth, mHeight), 0.5f, 30);
     for(int i = 0; i < mP.size(); i++){
         mP[i].draw(mWidth, mHeight);
     }
@@ -236,7 +245,7 @@ void ImmersiveXsectionApp::loadShaders()
     mPUpdateGlsl->uniform( "H", 1.0f / 60.0f );
     mPUpdateGlsl->uniform( "Accel", vec3( 0.0f ) );
     mPUpdateGlsl->uniform( "ParticleLifetime", 3.0f );
-    mPUpdateGlsl->uniform( "Click",  -10.0f);
+    mPUpdateGlsl->uniform( "Click",  mClick);
     mPUpdateGlsl->uniform( "Sit",  mSit);
     
     try {

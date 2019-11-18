@@ -15,6 +15,7 @@ public:
     void draw(float width, float height);
     void applyForce(const vec2 &force);
     void flocking(vector<Particle> boids, float ali, float sep, float coh, float aliDist, float sepDist, float cohDist);
+    void checkGrass(vec2 chair, bool sit, float click, float time);
     vec2 seek(vec2 target);
     vec2 seperation(float sep, vector<Particle> boids);
     vec2 cohesion(float coh, vector<Particle> boids);
