@@ -11,7 +11,7 @@ Particle::Particle(vec2 position, vec2 velocity, float hue){
     mVelocityNormalized = glm::normalize(velocity);
     mTailPosition = position;
     
-    mMaxSpeed = Rand::randFloat(0.003f, 0.007f);
+    mMaxSpeed = Rand::randFloat(0.001f, 0.003f);
     mMaxSpeedSquared = mMaxSpeed * mMaxSpeed;
     mMinSpeed = Rand::randFloat(0.0f, 0.0001f);
     mMinSpeedSquared = mMinSpeed * mMinSpeed;
@@ -22,7 +22,7 @@ Particle::Particle(vec2 position, vec2 velocity, float hue){
     mTailLength = 10.0f;
     mVelMag = 0.0f;
     
-    color = Color(CM_HSV, hue + Rand::randFloat(-0.1f, 0.1f), 0.8f + Rand::randFloat(-0.2f, 0.2f), 0.9f + Rand::randFloat(-0.1f, 0.1f));
+    color = Color(CM_HSV, hue + Rand::randFloat(-0.05f, 0.05f), 0.8f + Rand::randFloat(-0.2f, 0.2f), 0.9f + Rand::randFloat(-0.1f, 0.1f));
 }
 
 void Particle::update() {
@@ -81,6 +81,14 @@ vec2 Particle::seek(vec2 target) {
 vec2 Particle::boundary(float width, float height){
     vec2 desired;
     vec2 steer(0);
+//    if (mPosition.x < -width - 0.05) {
+//        mPosition.x = -mPosition.x;
+//        return steer;
+//    }
+//    else if (mPosition.x > width + 0.05) {
+//        mPosition.x = -mPosition.x;
+//        return steer;
+//    }
     if (mPosition.x < -width) {
         desired = vec2(mMaxSpeed, mVelocity.y);
     }
@@ -178,9 +186,10 @@ void Particle::checkGrass(vec2 chair, bool sit, float click, float time){
     //    applyForce(steer);
     //    if(!sit){
     if (d < 0.1 && sit){
-        desired = -dir * mMaxSpeed * 0.75f;
-        steer = desired - mVelocity;
-        steer = glm::normalize(steer) * mMaxForce;
+//        desired = -dir * mMaxSpeed * 0.55f;
+//        steer = desired - mVelocity;
+//        steer = glm::normalize(steer) * mMaxForce;
+        steer = seek(chair);
         applyForce(steer * 1.0f);
     }
     

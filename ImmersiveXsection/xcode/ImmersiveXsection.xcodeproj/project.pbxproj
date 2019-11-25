@@ -24,10 +24,36 @@
 		5C940E7F237E569F00C73BA5 /* update.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E7A237E569F00C73BA5 /* update.vert */; };
 		5C940E80237E569F00C73BA5 /* render.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E7B237E569F00C73BA5 /* render.vert */; };
 		5C940E81237E569F00C73BA5 /* util.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E7C237E569F00C73BA5 /* util.glsl */; };
+		5C940E8A23883EF500C73BA5 /* caustic.frag in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E8823883EF400C73BA5 /* caustic.frag */; };
+		5C940E8B23883EF500C73BA5 /* caustic.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E8923883EF500C73BA5 /* caustic.vert */; };
+		5C940E8E238C3DB300C73BA5 /* blur.vert in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E8C238C3DB200C73BA5 /* blur.vert */; };
+		5C940E8F238C3DB300C73BA5 /* blur.frag in Resources */ = {isa = PBXBuildFile; fileRef = 5C940E8D238C3DB300C73BA5 /* blur.frag */; };
+		5C940EAC238C53A400C73BA5 /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C940EA8238C53A400C73BA5 /* libusb-1.0.0.dylib */; };
+		5C940EB1238C550900C73BA5 /* librealsense2.2.20.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C940EB0238C550900C73BA5 /* librealsense2.2.20.0.dylib */; };
+		5C940EB2238C553300C73BA5 /* librealsense2.2.20.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C940EB0238C550900C73BA5 /* librealsense2.2.20.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5C940EB4238C553400C73BA5 /* libusb-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C940EA8238C53A400C73BA5 /* libusb-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5C940EB7238C554A00C73BA5 /* librealsense2.2.20.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C940EB5238C554A00C73BA5 /* librealsense2.2.20.dylib */; };
+		5C940EB9238C554E00C73BA5 /* librealsense2.2.20.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C940EB5238C554A00C73BA5 /* librealsense2.2.20.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		731E4AED33C84985BA4ABED9 /* ImmersiveXsectionApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E503B9A0E1C47AE89BF90FB /* ImmersiveXsectionApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		9EF72B5C66B340CA9F3C372E /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 45C288052F2E4F7EB5D0F72F /* CinderApp.icns */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5C940EB3238C553300C73BA5 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				5C940EB2238C553300C73BA5 /* librealsense2.2.20.0.dylib in Embed Libraries */,
+				5C940EB4238C553400C73BA5 /* libusb-1.0.0.dylib in Embed Libraries */,
+				5C940EB9238C554E00C73BA5 /* librealsense2.2.20.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		006D720219952D00008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -53,6 +79,18 @@
 		5C940E7A237E569F00C73BA5 /* update.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = update.vert; sourceTree = "<group>"; };
 		5C940E7B237E569F00C73BA5 /* render.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = render.vert; sourceTree = "<group>"; };
 		5C940E7C237E569F00C73BA5 /* util.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = util.glsl; sourceTree = "<group>"; };
+		5C940E8823883EF400C73BA5 /* caustic.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = caustic.frag; sourceTree = "<group>"; };
+		5C940E8923883EF500C73BA5 /* caustic.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = caustic.vert; sourceTree = "<group>"; };
+		5C940E8C238C3DB200C73BA5 /* blur.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = blur.vert; sourceTree = "<group>"; };
+		5C940E8D238C3DB300C73BA5 /* blur.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = blur.frag; sourceTree = "<group>"; };
+		5C940E90238C512E00C73BA5 /* librealsense2.2.20.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librealsense2.2.20.dylib; path = ../../../librealsense/build/librealsense2.2.20.dylib; sourceTree = "<group>"; };
+		5C940E91238C512E00C73BA5 /* librealsense2.2.20.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librealsense2.2.20.0.dylib; path = ../../../librealsense/build/librealsense2.2.20.0.dylib; sourceTree = "<group>"; };
+		5C940E92238C512E00C73BA5 /* librealsense2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librealsense2.dylib; path = ../../../librealsense/build/librealsense2.dylib; sourceTree = "<group>"; };
+		5C940E9A238C515500C73BA5 /* libusb-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libusb-1.0.0.dylib"; path = "../../chenlee/xcode/libusb-1.0.0.dylib"; sourceTree = "<group>"; };
+		5C940E9D238C530200C73BA5 /* libusb-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libusb-1.0.0.dylib"; sourceTree = "<group>"; };
+		5C940EA8238C53A400C73BA5 /* libusb-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libusb-1.0.0.dylib"; sourceTree = "<group>"; };
+		5C940EB0238C550900C73BA5 /* librealsense2.2.20.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = librealsense2.2.20.0.dylib; sourceTree = "<group>"; };
+		5C940EB5238C554A00C73BA5 /* librealsense2.2.20.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = librealsense2.2.20.dylib; sourceTree = "<group>"; };
 		5E503B9A0E1C47AE89BF90FB /* ImmersiveXsectionApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = ImmersiveXsectionApp.cpp; path = ../src/ImmersiveXsectionApp.cpp; sourceTree = "<group>"; };
 		600A6D551F2542389FF7DFB6 /* ImmersiveXsection_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ImmersiveXsection_Prefix.pch; sourceTree = "<group>"; };
 		7381370D3B574357A8829A6A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -65,9 +103,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C940EB1238C550900C73BA5 /* librealsense2.2.20.0.dylib in Frameworks */,
 				006D720419952D00008149E2 /* AVFoundation.framework in Frameworks */,
 				006D720519952D00008149E2 /* CoreMedia.framework in Frameworks */,
+				5C940EB7238C554A00C73BA5 /* librealsense2.2.20.dylib in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				5C940EAC238C53A400C73BA5 /* libusb-1.0.0.dylib in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
 				00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */,
@@ -139,6 +180,9 @@
 		29B97314FDCFA39411CA2CEA /* ImmersiveXsection */ = {
 			isa = PBXGroup;
 			children = (
+				5C940EA8238C53A400C73BA5 /* libusb-1.0.0.dylib */,
+				5C940EB5238C554A00C73BA5 /* librealsense2.2.20.dylib */,
+				5C940EB0238C550900C73BA5 /* librealsense2.2.20.0.dylib */,
 				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				5C940E77237E569F00C73BA5 /* assets */,
@@ -171,6 +215,11 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5C940E9A238C515500C73BA5 /* libusb-1.0.0.dylib */,
+				5C940E9D238C530200C73BA5 /* libusb-1.0.0.dylib */,
+				5C940E91238C512E00C73BA5 /* librealsense2.2.20.0.dylib */,
+				5C940E90238C512E00C73BA5 /* librealsense2.2.20.dylib */,
+				5C940E92238C512E00C73BA5 /* librealsense2.dylib */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -182,9 +231,13 @@
 			children = (
 				5C940E78237E569F00C73BA5 /* render.frag */,
 				5C940E79237E569F00C73BA5 /* render.geom */,
+				5C940E8D238C3DB300C73BA5 /* blur.frag */,
+				5C940E8C238C3DB200C73BA5 /* blur.vert */,
 				5C940E7A237E569F00C73BA5 /* update.vert */,
 				5C940E7B237E569F00C73BA5 /* render.vert */,
 				5C940E7C237E569F00C73BA5 /* util.glsl */,
+				5C940E8823883EF400C73BA5 /* caustic.frag */,
+				5C940E8923883EF500C73BA5 /* caustic.vert */,
 			);
 			name = assets;
 			path = ../assets;
@@ -200,6 +253,7 @@
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
+				5C940EB3238C553300C73BA5 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -243,11 +297,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				9EF72B5C66B340CA9F3C372E /* CinderApp.icns in Resources */,
+				5C940E8A23883EF500C73BA5 /* caustic.frag in Resources */,
+				5C940E8E238C3DB300C73BA5 /* blur.vert in Resources */,
 				5C940E80237E569F00C73BA5 /* render.vert in Resources */,
 				5C940E7F237E569F00C73BA5 /* update.vert in Resources */,
 				5C940E81237E569F00C73BA5 /* util.glsl in Resources */,
+				5C940E8F238C3DB300C73BA5 /* blur.frag in Resources */,
 				5C940E7D237E569F00C73BA5 /* render.frag in Resources */,
 				5C940E7E237E569F00C73BA5 /* render.geom in Resources */,
+				5C940E8B23883EF500C73BA5 /* caustic.vert in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,6 +343,10 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = ImmersiveXsection;
@@ -312,6 +374,10 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = ImmersiveXsection;
@@ -331,7 +397,15 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/include\"",
+					/Users/howlchen/Documents/source/librealsense/include,
+					"/usr/local/Cellar/opencv/4.1.0_1/include/**",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/Users/howlchen/Documents/source/librealsense/build,
+					/usr/local/Cellar/opencv/4.1.0_1/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -348,7 +422,15 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/include\"",
+					/Users/howlchen/Documents/source/librealsense/include,
+					"/usr/local/Cellar/opencv/4.1.0_1/include/**",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/Users/howlchen/Documents/source/librealsense/build,
+					/usr/local/Cellar/opencv/4.1.0_1/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";

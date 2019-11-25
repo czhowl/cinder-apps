@@ -5,8 +5,16 @@
 #include "cinder/Rand.h"
 #include "cinder/CameraUi.h"
 #include "cinder/Perlin.h"
+#include "cinder/params/Params.h"
 
 #include "Particle.h"
+
+#include <librealsense2/rs.hpp>
+//#include <opencv2/opencv.hpp>
+
+#define SCENE_SIZE 1600
+#define BLUR_SIZE 200
+#define FISH_NUM 50
 
 using namespace ci;
 using namespace ci::app;
@@ -28,6 +36,9 @@ public:
     void update() override;
     void draw() override;
     void keyDown(KeyEvent event) override;
+    void resize() override;
+    void renderScene();
+    void renderFish();
     
     void loadBuffers();
     void loadShaders();
@@ -60,46 +71,162 @@ private:
     float                       mSit = 0.0f;
     float                       mClick = -10.0f;
     
-    gl::FboRef                  mColorFbo;
-    
-    
     vector<Particle>                    mP;
+    
+    gl::FboRef                          mCausticFbo;
+    gl::GlslProgRef                     mCausticGlsl;
+    
+    gl::GlslProgRef                     mShaderBlur;
+    gl::FboRef                          mFboScene;
+    gl::FboRef                          mFboBlur1;
+    gl::FboRef                          mFboBlur2;
+    
+    params::InterfaceGlRef              mParams;
+    float                               mFrameRate;
+    float                               mBloomEffect;
+    float                               mAlignment;
+    float                               mSeparation;
+    float                               mCohesion;
+    float                               mAlignmentDist;
+    float                               mSeparationDist;
+    float                               mCohesionDist;
+    bool                                mDrawIr;
+    int                                 mExposure;
+    int                                 mGain;
+    
+    // Declare depth colorizer for pretty visualization of depth data
+    rs2::colorizer color_map;
+    // Declare rates printer for showing streaming rates of the enabled streams.
+    rs2::rates_printer printer;
+
+    // Declare RealSense pipeline, encapsulating the actual device and sensors
+    rs2::pipeline pipe;
+    rs2::pipeline_profile pipeline_profile;
+    
+    gl::Texture2dRef            mIrTex;
 };
 
 void ImmersiveXsectionApp::prepare(Settings *settings)
 {
     settings->setTitle("XR in Real World: Immersive Xsection");
     settings->setWindowSize(800, 800);
+    settings->setHighDensityDisplayEnabled();
     //    settings->disableFrameRate();
 }
 
 void ImmersiveXsectionApp::setup()
 {
+    // -------------------------------- Fish Parameters
+    mFrameRate = 0.0f;
+    mAlignment = 0.2f;
+    mSeparation = 1.1f;
+    mCohesion = 0.13f;
+    mAlignmentDist = 0.1f;
+    mSeparationDist = 0.03f;
+    mCohesionDist = 0.06f;
+    mBloomEffect = 1.0f;
+    mDrawIr = true;
+    mExposure = 1000;
+    mGain = 16;
+    mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels(ivec2( 300, 400 )) );
+    mParams->addParam( "Frame rate",        &mFrameRate,                    "", true );
+    mParams->addParam( "Bloom Attenuation", &mBloomEffect ).min( 0.0f ).max( 2.5f ).step( 0.01f );
+    mParams->addSeparator();
+    mParams->addParam( "Alignment", &mAlignment ).min( 0.0f ).max( 2.0f ).step( 0.01f );
+    mParams->addParam( "Alignment Distance", &mAlignmentDist ).min( 0.0f ).max( 0.5f ).step( 0.01f );
+    mParams->addSeparator();
+    mParams->addParam( "Separation", &mSeparation ).min( 0.0f ).max( 2.0f ).step( 0.01f );
+    mParams->addParam( "Separation Distance", &mSeparationDist ).min( 0.0f ).max( 0.5f ).step( 0.01f );
+    mParams->addSeparator();
+    mParams->addParam( "Cohesion", &mCohesion ).min( 0.0f ).max( 2.0f ).step( 0.01f );
+    mParams->addParam( "Cohesion Distance", &mCohesionDist ).min( 0.0f ).max( 0.5f ).step( 0.01f );
+    mParams->addSeparator();
+    mParams->addParam( "Draw IR Texture", &mDrawIr );
+    mParams->addParam( "Exporsure", &mExposure ).min( 20 ).max( 166000 ).step( 20 ).updateFn( [this] {
+        rs2::depth_sensor depth_sensor = pipeline_profile.get_device().first<rs2::depth_sensor>();
+        if( depth_sensor.supports( rs2_option::RS2_OPTION_EXPOSURE ) ){
+            depth_sensor.set_option( rs2_option::RS2_OPTION_EXPOSURE, mExposure ); // def:8500 (min:20 - max:166000), step:20
+        }
+    } );
+    mParams->addParam( "Gain", &mGain ).min( 16 ).max( 248 ).step( 1 ).updateFn( [this] {
+        rs2::depth_sensor depth_sensor = pipeline_profile.get_device().first<rs2::depth_sensor>();
+        if( depth_sensor.supports( rs2_option::RS2_OPTION_GAIN ) ){
+                depth_sensor.set_option( rs2_option::RS2_OPTION_GAIN, mGain ); // def:16 (min:16 - max:248), step:1
+        }
+    } );
+    
+    
+    
+    for(int i = 0; i < FISH_NUM; i++){
+        mP.push_back(Particle(vec2(randFloat(-0.5, 0.5),randFloat(-0.5, 0.5)), vec2(randFloat(-0.1, 0.1),randFloat(-0.1, 0.1)), 0.13));
+    }
+    // -------------------------------- Coral Parameters
     mWidth = sqrt(numGrass);
     mHeight = mWidth;
     numGrass = mWidth * mHeight;
     mDrawBuff = 1;
+    // -------------------------------- Camera
     mCamUI = CameraUi(&mCam);
     mCam.setPerspective( 10.0f, getWindowAspectRatio(), .01f, 1000.0f );
     mCam.lookAt( vec3( 0, 550, 0 ), vec3( 0, 0, 0 ) );
     
-    // FBO
+    // -------------------------------- Caustic Light
     gl::Fbo::Format fboFormat;
     fboFormat.setColorTextureFormat( gl::Texture2d::Format().internalFormat( GL_RGBA32F ) );
-    mColorFbo = gl::Fbo::create( mWidth, mHeight, fboFormat );
+    mCausticFbo = gl::Fbo::create( mWidth, mHeight, fboFormat );
     {
-        gl::ScopedFramebuffer scpFbo( mColorFbo );
-        gl::ScopedViewport    scpViewport( mColorFbo->getSize() );
-        gl::clear();
-        
+        gl::ScopedFramebuffer scpFbo( mCausticFbo );
+        gl::ScopedViewport    scpViewport( mCausticFbo->getSize() );
+        gl::clear(ColorA( 1.0, 0.00, 0.0, 1.0 ));
     }
-    // Ocean
+    // -------------------------------- Bloom
+    gl::Fbo::Format fmt;
+    fmt.setSamples( 16 );
+    
+    // setup our scene Fbo
+    mFboScene = gl::Fbo::create( SCENE_SIZE, SCENE_SIZE, fmt );
+
+    // setup our blur Fbo's, smaller ones will generate a bigger blur
+    mFboBlur1 = gl::Fbo::create( BLUR_SIZE, BLUR_SIZE );
+    mFboBlur2 = gl::Fbo::create( BLUR_SIZE, BLUR_SIZE );
+    
+    // -------------------------------- Shaders & Buffers
     loadShaders();
     loadBuffers();
     
-    for(int i = 0; i < 30; i++){
-        mP.push_back(Particle(vec2(randFloat(-0.5, 0.5),randFloat(-0.5, 0.5)), vec2(randFloat(-0.1, 0.1),randFloat(-0.1, 0.1)), 0.5));
+    // -------------------------------- Realsense + OpenCV
+    rs2::config cfg;
+    cfg.enable_stream(RS2_STREAM_INFRARED, 640, 480, RS2_FORMAT_Y8, 30);
+    cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480, RS2_FORMAT_Z16, 30);
+    pipeline_profile = pipe.start( cfg );
+    rs2::frameset frames;
+    // Set Sensor Option
+    // IR Emitter
+    rs2::depth_sensor depth_sensor = pipeline_profile.get_device().first<rs2::depth_sensor>();
+    if( depth_sensor.supports( rs2_option::RS2_OPTION_EMITTER_ENABLED ) ){
+        depth_sensor.set_option( rs2_option::RS2_OPTION_EMITTER_ENABLED, 0.0f ); // Disable IR Emitter
+        // depth_sensor.set_option( rs2_option::RS2_OPTION_EMITTER_ENABLED, 1.0f ); // Enable IR Emitter
     }
+    
+    // Exposure
+    if( depth_sensor.supports( rs2_option::RS2_OPTION_EXPOSURE ) ){
+//        const rs2::option_range option_range = depth_sensor.get_option_range( rs2_option::RS2_OPTION_EXPOSURE );
+        depth_sensor.set_option( rs2_option::RS2_OPTION_EXPOSURE, mExposure ); // def:8500 (min:20 - max:166000), step:20
+    }
+//
+//    // Gain
+    if( depth_sensor.supports( rs2_option::RS2_OPTION_GAIN ) ){
+//        const rs2::option_range option_range = depth_sensor.get_option_range( rs2_option::RS2_OPTION_GAIN );
+        depth_sensor.set_option( rs2_option::RS2_OPTION_GAIN, mGain ); // def:16 (min:16 - max:248), step:1
+    }
+    for (int i = 0; i < 30; i++)
+    {
+        //Wait for all configured streams to produce a frame
+        frames = pipe.wait_for_frames();
+    }
+}
+
+void ImmersiveXsectionApp::resize(){
     
 }
 
@@ -127,17 +254,26 @@ void ImmersiveXsectionApp::keyDown( KeyEvent event )
 
 void ImmersiveXsectionApp::update()
 {
+    mFrameRate    = getAverageFps();
+    // -------------------------------- Camera
+    rs2::frameset fs;
+    if (pipe.poll_for_frames(&fs))
+    {
+        rs2::frame ir_frame = fs.first(RS2_STREAM_INFRARED);
+        rs2::frame depth_frame = fs.get_depth_frame();
+        mIrTex = gl::Texture2d::create((void*)ir_frame.get_data(), GL_RED, 640, 480, gl::Texture::Format().loadTopDown());
+    }
     vec2 mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);
-    vec2 fishPos[30];
-    vec2 chair = mouse - vec2(0.5);
+    vec2 fishPos[FISH_NUM];
+    vec2 chair = mouse - vec2(0.5) + vec2(0.0, -0.025);
     float time = getElapsedFrames() / 60.0f ;
     // update fishes
-    for(int i = 0; i < mP.size(); i++){
+    for(int i = 0; i < FISH_NUM; i++){
         //        vec2 seek = mP[i].seek(mouse - vec2(0.5));
         vec2 bound = mP[i].boundary(0.45f, 0.45f);
         mP[i].applyForce(bound * 2.0f);
         //                 ali, sep, coh, aliDist, sepDist, cohDist
-        mP[i].flocking(mP, 0.1f, 1.3f, 0.1f, 0.1f, 0.03f, 0.05f);
+        mP[i].flocking(mP, mAlignment, mSeparation, mCohesion, mAlignmentDist, mSeparationDist, mCohesionDist);
         mP[i].checkGrass(chair, mSit, mClick, time);
         mP[i].update();
         fishPos[i] = mP[i].getPosition();
@@ -175,18 +311,20 @@ void ImmersiveXsectionApp::update()
     gl::endTransformFeedback();
 }
 
-void ImmersiveXsectionApp::draw()
-{
-    // clear out the window with black
-    gl::clear( Color( 0.04, 0.05, 0.16 ) );
-    
-    gl::pushMatrices();
+void ImmersiveXsectionApp::renderScene(){
+    float t = getElapsedSeconds();
     gl::setMatrices( mCam );
     gl::pushMatrices();
-    gl::color(1.0, 0.5, 0.2);
     gl::rotate(M_PI/2, vec3(1.0,0.0,0.0));
-//    gl::drawSolidCircle((mTester - vec2(0.5)) * vec2(mWidth, mHeight), 0.5f, 30);
-    for(int i = 0; i < mP.size(); i++){
+    gl::pushMatrices();
+    gl::translate(-mWidth/2, -mHeight/2);
+    if( mCausticGlsl ) {
+        gl::ScopedGlslProg    shader( mCausticGlsl );
+        mCausticGlsl->uniform( "Time", t);
+        gl::drawSolidRect( Rectf(0.0, 0.0, mWidth, mHeight) );
+    }
+    gl::popMatrices();
+    for(int i = 0; i < FISH_NUM; i++){
         mP[i].draw(mWidth, mHeight);
     }
     gl::popMatrices();
@@ -197,11 +335,95 @@ void ImmersiveXsectionApp::draw()
         //    gl::ScopedBlend            blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         gl::ScopedBlendAdditive blend;
         gl::color(1.0, 1.0, 1.0);
-        mPRenderGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
+        mPRenderGlsl->uniform( "Time", t);
         gl::setDefaultShaderVars();
         gl::drawArrays( GL_POINTS, 0, numGrass );
     }
+}
+
+void ImmersiveXsectionApp::renderFish(){
+    gl::setMatrices( mCam );
+    gl::pushMatrices();
+    //    gl::color(1.0, 0.5, 0.2);
+    gl::rotate(M_PI/2, vec3(1.0,0.0,0.0));
+    //    gl::drawSolidCircle((mTester - vec2(0.5)) * vec2(mWidth, mHeight), 0.5f, 30);
+    for(int i = 0; i < FISH_NUM; i++){
+        mP[i].draw(mWidth, mHeight);
+    }
     gl::popMatrices();
+}
+
+void ImmersiveXsectionApp::draw()
+{
+    // clear out the window with black
+    gl::clear( Color( 0.04, 0.05, 0.16 ) );
+    
+    {
+        gl::ScopedFramebuffer fbo( mFboScene );
+        gl::ScopedViewport    viewport( 0, 0, mFboScene->getWidth(), mFboScene->getHeight() );
+        gl::setMatricesWindow( SCENE_SIZE, SCENE_SIZE );
+        gl::clear( Color::black() );
+        
+        renderScene();
+    }
+    // bind the blur shader
+    {
+        gl::ScopedGlslProg shader( mShaderBlur );
+        mShaderBlur->uniform( "tex0", 0 ); // use texture unit 0
+
+        // tell the shader to blur horizontally and the size of 1 pixel
+        mShaderBlur->uniform( "sample_offset", vec2( 1.0f / mFboBlur1->getWidth(), 0.0f ) );
+        mShaderBlur->uniform( "attenuation", mBloomEffect );
+
+        // copy a horizontally blurred version of our scene into the first blur Fbo
+        {
+            gl::ScopedFramebuffer fbo( mFboBlur1 );
+            gl::ScopedViewport    viewport( 0, 0, mFboBlur1->getWidth(), mFboBlur1->getHeight() );
+
+            gl::ScopedTextureBind tex0( mFboScene->getColorTexture(), (uint8_t)0 );
+
+            gl::setMatricesWindow( BLUR_SIZE, BLUR_SIZE );
+            gl::clear( Color::black() );
+
+            gl::drawSolidRect( mFboBlur1->getBounds() );
+        }
+
+        // tell the shader to blur vertically and the size of 1 pixel
+        mShaderBlur->uniform( "sample_offset", vec2( 0.0f, 1.0f / mFboBlur2->getHeight() ) );
+        mShaderBlur->uniform( "attenuation", mBloomEffect );
+
+        // copy a vertically blurred version of our blurred scene into the second blur Fbo
+        {
+            gl::ScopedFramebuffer fbo( mFboBlur2 );
+            gl::ScopedViewport    viewport( 0, 0, mFboBlur2->getWidth(), mFboBlur2->getHeight() );
+
+            gl::ScopedTextureBind tex0( mFboBlur1->getColorTexture(), (uint8_t)0 );
+
+            gl::setMatricesWindow( BLUR_SIZE, BLUR_SIZE );
+            gl::clear( Color::black() );
+
+            gl::drawSolidRect( mFboBlur2->getBounds() );
+        }
+    }
+//    {
+//        gl::ScopedFramebuffer fbo( mFboScene );
+//        gl::ScopedViewport    viewport( 0, 0, mFboScene->getWidth(), mFboScene->getHeight() );
+//        gl::setMatricesWindow( SCENE_SIZE, SCENE_SIZE );
+//
+//        renderFish();
+//    }
+    gl::pushMatrices();
+    gl::setMatricesWindow( 800, 800 );
+    
+    gl::draw( mFboScene->getColorTexture(), Rectf( 0, 0, 800, 800 ) );
+    gl::enableAdditiveBlending();
+    gl::draw( mFboBlur2->getColorTexture(), Rectf( 0, 0, 800, 800 ) );
+    gl::disableAlphaBlending();
+    
+    if (mDrawIr && mIrTex) gl::draw(mIrTex);
+    
+    gl::popMatrices();
+    mParams->draw();
 }
 
 void ImmersiveXsectionApp::loadShaders()
@@ -267,6 +489,25 @@ void ImmersiveXsectionApp::loadShaders()
     mPRenderGlsl->uniform( "MinParticleSize", 1.0f );
     mPRenderGlsl->uniform( "MaxParticleSize", 64.0f );
     mPRenderGlsl->uniform( "ParticleLifetime", 3.0f );
+    
+    try {
+        ci::gl::GlslProg::Format mCausticGlslFormat;
+        // This being the render glsl, we provide a fragment shader.
+        mCausticGlslFormat.vertex( loadAsset( "caustic.vert" ) )
+        .fragment( loadAsset( "caustic.frag" ) );
+
+        mCausticGlsl = ci::gl::GlslProg::create( mCausticGlslFormat );
+    }
+    catch( const ci::gl::GlslProgCompileExc &ex ) {
+        console() << "CAUSTIC GLSL ERROR: " << ex.what() << std::endl;
+    }
+    
+    try {
+        mShaderBlur = gl::GlslProg::create( loadAsset( "blur.vert" ), loadAsset( "blur.frag" ) );
+    }
+    catch( const ci::gl::GlslProgCompileExc &ex ) {
+        console() << "CAUSTIC GLSL ERROR: " << ex.what() << std::endl;
+    }
 }
 
 void ImmersiveXsectionApp::loadBuffers()
