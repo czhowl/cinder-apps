@@ -27,7 +27,7 @@ uniform vec2 FishPos[50];
 
 const vec3 green = vec3(0.4, 1.0, 0.0);
 const vec3 red = vec3(3.0, 0.8, 0.2);
-const vec3 blue = vec3(0.2, 0.8, 3.0);
+const vec3 blue = vec3(0.0, 2.8, 0.2);
 const vec3 white = vec3(1.0, 1.0, 1.0);
 
 void main() {

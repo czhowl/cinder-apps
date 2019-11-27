@@ -6,19 +6,28 @@
 #include "cinder/CameraUi.h"
 #include "cinder/Perlin.h"
 #include "cinder/params/Params.h"
+#include "cinder/Serial.h"
 
 #include "Particle.h"
 
 #include <librealsense2/rs.hpp>
-//#include <opencv2/opencv.hpp>
+#ifdef __cplusplus
+#undef NO
+#undef YES
+#import <opencv2/opencv.hpp>
+#endif
 
 #define SCENE_SIZE 1600
 #define BLUR_SIZE 200
 #define FISH_NUM 50
+#define IR_WIDTH 480
+#define IR_HEIGHT 270
+#define CONNECTIONS false
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+using namespace cv;
 
 const int PositionIndex            = 0;
 const int PositionEndIndex         = 1;
@@ -91,19 +100,29 @@ private:
     float                               mSeparationDist;
     float                               mCohesionDist;
     bool                                mDrawIr;
+    bool                                mDrawFilteredIr;
+    bool                                mDrawIrBlob;
     int                                 mExposure;
     int                                 mGain;
+    int                                 mLowerBound;
+    int                                 mUpperBound;
+    int                                 mSitThresh;
     
     // Declare depth colorizer for pretty visualization of depth data
     rs2::colorizer color_map;
     // Declare rates printer for showing streaming rates of the enabled streams.
     rs2::rates_printer printer;
-
+    
     // Declare RealSense pipeline, encapsulating the actual device and sensors
     rs2::pipeline pipe;
     rs2::pipeline_profile pipeline_profile;
     
     gl::Texture2dRef            mIrTex;
+    gl::Texture2dRef            mFilteredTex;
+    gl::Texture2dRef            mBlobTex;
+    
+    vec2                        mlastMouse;
+    SerialRef                   mSerial;
 };
 
 void ImmersiveXsectionApp::prepare(Settings *settings)
@@ -125,9 +144,14 @@ void ImmersiveXsectionApp::setup()
     mSeparationDist = 0.03f;
     mCohesionDist = 0.06f;
     mBloomEffect = 1.0f;
-    mDrawIr = true;
+    mDrawIr = false;
+    mDrawFilteredIr = false;
+    mDrawIrBlob = false;
     mExposure = 1000;
     mGain = 16;
+    mLowerBound = 100;
+    mUpperBound = 255;
+    mSitThresh = 30;
     mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels(ivec2( 300, 400 )) );
     mParams->addParam( "Frame rate",        &mFrameRate,                    "", true );
     mParams->addParam( "Bloom Attenuation", &mBloomEffect ).min( 0.0f ).max( 2.5f ).step( 0.01f );
@@ -142,6 +166,8 @@ void ImmersiveXsectionApp::setup()
     mParams->addParam( "Cohesion Distance", &mCohesionDist ).min( 0.0f ).max( 0.5f ).step( 0.01f );
     mParams->addSeparator();
     mParams->addParam( "Draw IR Texture", &mDrawIr );
+    mParams->addParam( "Draw IR Filtered", &mDrawFilteredIr );
+    mParams->addParam( "Draw IR Blob", &mDrawIrBlob );
     mParams->addParam( "Exporsure", &mExposure ).min( 20 ).max( 166000 ).step( 20 ).updateFn( [this] {
         rs2::depth_sensor depth_sensor = pipeline_profile.get_device().first<rs2::depth_sensor>();
         if( depth_sensor.supports( rs2_option::RS2_OPTION_EXPOSURE ) ){
@@ -151,10 +177,21 @@ void ImmersiveXsectionApp::setup()
     mParams->addParam( "Gain", &mGain ).min( 16 ).max( 248 ).step( 1 ).updateFn( [this] {
         rs2::depth_sensor depth_sensor = pipeline_profile.get_device().first<rs2::depth_sensor>();
         if( depth_sensor.supports( rs2_option::RS2_OPTION_GAIN ) ){
-                depth_sensor.set_option( rs2_option::RS2_OPTION_GAIN, mGain ); // def:16 (min:16 - max:248), step:1
+            depth_sensor.set_option( rs2_option::RS2_OPTION_GAIN, mGain ); // def:16 (min:16 - max:248), step:1
         }
     } );
-    
+    mParams->addSeparator();
+    mParams->addParam( "Lower Bound", &mLowerBound ).min( 0 ).max( 254 ).step( 1 ).updateFn( [this] {
+        if(mLowerBound >= mUpperBound){
+            mLowerBound = mUpperBound - 1;
+        }
+    } );
+    mParams->addParam( "Upper Bound", &mUpperBound ).min( 1 ).max( 255 ).step( 1 ).updateFn( [this] {
+        if(mLowerBound >= mUpperBound){
+            mUpperBound = mLowerBound + 1;
+        }
+    } );
+    mParams->addParam( "Sit Threshold", &mSitThresh ).min( 0 ).max( 480 ).step( 1 );
     
     
     for(int i = 0; i < FISH_NUM; i++){
@@ -185,7 +222,7 @@ void ImmersiveXsectionApp::setup()
     
     // setup our scene Fbo
     mFboScene = gl::Fbo::create( SCENE_SIZE, SCENE_SIZE, fmt );
-
+    
     // setup our blur Fbo's, smaller ones will generate a bigger blur
     mFboBlur1 = gl::Fbo::create( BLUR_SIZE, BLUR_SIZE );
     mFboBlur2 = gl::Fbo::create( BLUR_SIZE, BLUR_SIZE );
@@ -194,35 +231,50 @@ void ImmersiveXsectionApp::setup()
     loadShaders();
     loadBuffers();
     
-    // -------------------------------- Realsense + OpenCV
-    rs2::config cfg;
-    cfg.enable_stream(RS2_STREAM_INFRARED, 640, 480, RS2_FORMAT_Y8, 30);
-    cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480, RS2_FORMAT_Z16, 30);
-    pipeline_profile = pipe.start( cfg );
-    rs2::frameset frames;
-    // Set Sensor Option
-    // IR Emitter
-    rs2::depth_sensor depth_sensor = pipeline_profile.get_device().first<rs2::depth_sensor>();
-    if( depth_sensor.supports( rs2_option::RS2_OPTION_EMITTER_ENABLED ) ){
-        depth_sensor.set_option( rs2_option::RS2_OPTION_EMITTER_ENABLED, 0.0f ); // Disable IR Emitter
-        // depth_sensor.set_option( rs2_option::RS2_OPTION_EMITTER_ENABLED, 1.0f ); // Enable IR Emitter
-    }
-    
-    // Exposure
-    if( depth_sensor.supports( rs2_option::RS2_OPTION_EXPOSURE ) ){
-//        const rs2::option_range option_range = depth_sensor.get_option_range( rs2_option::RS2_OPTION_EXPOSURE );
-        depth_sensor.set_option( rs2_option::RS2_OPTION_EXPOSURE, mExposure ); // def:8500 (min:20 - max:166000), step:20
-    }
-//
-//    // Gain
-    if( depth_sensor.supports( rs2_option::RS2_OPTION_GAIN ) ){
-//        const rs2::option_range option_range = depth_sensor.get_option_range( rs2_option::RS2_OPTION_GAIN );
-        depth_sensor.set_option( rs2_option::RS2_OPTION_GAIN, mGain ); // def:16 (min:16 - max:248), step:1
-    }
-    for (int i = 0; i < 30; i++)
-    {
-        //Wait for all configured streams to produce a frame
-        frames = pipe.wait_for_frames();
+    if(CONNECTIONS){
+        // -------------------------------- Realsense + OpenCV
+
+        rs2::config cfg;
+        cfg.enable_stream(RS2_STREAM_INFRARED, IR_WIDTH, IR_HEIGHT, RS2_FORMAT_Y8, 30);
+        cfg.enable_stream(RS2_STREAM_DEPTH, IR_WIDTH, IR_HEIGHT, RS2_FORMAT_Z16, 30);
+        pipeline_profile = pipe.start( cfg );
+        rs2::frameset frames;
+        // Set Sensor Option
+        // IR Emitter
+        rs2::depth_sensor depth_sensor = pipeline_profile.get_device().first<rs2::depth_sensor>();
+        if( depth_sensor.supports( rs2_option::RS2_OPTION_EMITTER_ENABLED ) ){
+            depth_sensor.set_option( rs2_option::RS2_OPTION_EMITTER_ENABLED, 0.0f ); // Disable IR Emitter
+            // depth_sensor.set_option( rs2_option::RS2_OPTION_EMITTER_ENABLED, 1.0f ); // Enable IR Emitter
+        }
+        
+        // Exposure
+        if( depth_sensor.supports( rs2_option::RS2_OPTION_EXPOSURE ) ){
+            //        const rs2::option_range option_range = depth_sensor.get_option_range( rs2_option::RS2_OPTION_EXPOSURE );
+            depth_sensor.set_option( rs2_option::RS2_OPTION_EXPOSURE, mExposure ); // def:8500 (min:20 - max:166000), step:20
+        }
+        //
+        //    // Gain
+        if( depth_sensor.supports( rs2_option::RS2_OPTION_GAIN ) ){
+            //        const rs2::option_range option_range = depth_sensor.get_option_range( rs2_option::RS2_OPTION_GAIN );
+            depth_sensor.set_option( rs2_option::RS2_OPTION_GAIN, mGain ); // def:16 (min:16 - max:248), step:1
+        }
+        for (int i = 0; i < 30; i++)
+        {
+            frames = pipe.wait_for_frames();
+        }
+        
+        // -------------------------------- Chair Communication
+        for( const auto &dev : Serial::getDevices() )
+            console() << "Device: " << dev.getName() << endl;
+        
+        try {
+            Serial::Device dev = Serial::findDeviceByNameContains( "cu.usbmodem14103" );
+            mSerial = Serial::create( dev, 9600 );
+        }
+        catch( SerialExc &exc ) {
+            console() << "coult not initialize the serial device " << endl;
+            exit( -1 );
+        }
     }
 }
 
@@ -255,15 +307,75 @@ void ImmersiveXsectionApp::keyDown( KeyEvent event )
 void ImmersiveXsectionApp::update()
 {
     mFrameRate    = getAverageFps();
+    vec2 mouse;
+    // -----------
+    if(!CONNECTIONS){
+        hideCursor();
+        mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);;
+    }else{
+        uint8_t b = 0;
+        if( mSerial->getNumBytesAvailable() > 0 ) {
+            b = mSerial->readByte();
+            console() << b << "_";
+            mClick = getElapsedFrames() / 60.0f;
+            mPUpdateGlsl->uniform( "Click", mClick);
+            mSerial->flush();
+        }
     // -------------------------------- Camera
-    rs2::frameset fs;
-    if (pipe.poll_for_frames(&fs))
-    {
-        rs2::frame ir_frame = fs.first(RS2_STREAM_INFRARED);
-        rs2::frame depth_frame = fs.get_depth_frame();
-        mIrTex = gl::Texture2d::create((void*)ir_frame.get_data(), GL_RED, 640, 480, gl::Texture::Format().loadTopDown());
+        mouse = mlastMouse;
+        rs2::frameset fs;
+        if (pipe.poll_for_frames(&fs))
+        {
+            rs2::frame ir_frame = fs.first(RS2_STREAM_INFRARED);
+            //        rs2::frame depth_frame = fs.get_depth_frame();
+            Mat ir(cv::Size(IR_WIDTH, IR_HEIGHT), CV_8UC1, (void*)ir_frame.get_data(), Mat::AUTO_STEP);
+            mIrTex = gl::Texture2d::create((void*)ir.data, GL_RED, IR_WIDTH, IR_HEIGHT);
+            
+            Mat filtered;
+            blur(ir, ir, cv::Size(11, 11), cv::Point(0, 0));
+            inRange(ir, cv::Scalar(mLowerBound, 0,0), cv::Scalar(mUpperBound,0,0), filtered);
+            mFilteredTex = gl::Texture2d::create((void*)filtered.data, GL_RED, IR_WIDTH, IR_HEIGHT);
+            
+            vector<vector<cv::Point> > contours;
+            vector<Vec4i> hierarchy;
+            findContours( filtered, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE );
+            
+            if(mDrawIrBlob){
+                Mat drawing = Mat::zeros( ir.size(), CV_8UC3 );
+                RNG rng(12345);
+                //            console() << contours.size() << endl;
+                for( size_t i = 0; i< contours.size(); i++ )
+                {
+                    Scalar color = Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
+                    drawContours( drawing, contours, (int)i, color, 2, LINE_8, hierarchy, 0 );
+                }
+                mBlobTex = gl::Texture2d::create((void*)drawing.data, GL_RGB, IR_WIDTH, IR_HEIGHT);
+            }
+            
+            if(contours.size() > 0){
+                vector<cv::Rect> boxes;
+                for( size_t i = 0; i< contours.size(); i++ )
+                {
+                    boxes.push_back(boundingRect( contours[i] ));
+                    vec2 center = vec2((boxes[i].x+boxes[i].width/2) / 480.0f, (boxes[i].y+boxes[i].height/2) / 270.0f);
+                    if(boxes[i].width < mSitThresh){
+                        mSit = 1.0f;
+                        mSerial->writeByte(1);
+                    }else{
+                        mSit = 0.0f;
+                        mSerial->writeByte(0);
+                    }
+                    mPUpdateGlsl->uniform( "Sit",  mSit);
+                    if(!isnan(center.x)){
+                        mouse = center;
+                        mlastMouse = mouse;
+                    }
+                }
+            }
+        }
     }
-    vec2 mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);
+    // -------------------------------- Scene
+    
     vec2 fishPos[FISH_NUM];
     vec2 chair = mouse - vec2(0.5) + vec2(0.0, -0.025);
     float time = getElapsedFrames() / 60.0f ;
@@ -298,8 +410,8 @@ void ImmersiveXsectionApp::update()
     mPUpdateGlsl->uniform( "Mouse",  mouse);
     
     mPUpdateGlsl->uniform( "FishPos",  (vec2*)fishPos, 30);
-//    mTester = mPerlin.dnoise( 0.0 , getElapsedSeconds()*0.3f)* 0.2f + vec2(0.5f);
-//    mPUpdateGlsl->uniform( "Tester",  mTester);
+    //    mTester = mPerlin.dnoise( 0.0 , getElapsedSeconds()*0.3f)* 0.2f + vec2(0.5f);
+    //    mPUpdateGlsl->uniform( "Tester",  mTester);
     // Opposite TransformFeedbackObj to catch the calculated values
     // In the opposite buffer
     mPFeedbackObj[1-mDrawBuff]->bind();
@@ -370,48 +482,48 @@ void ImmersiveXsectionApp::draw()
     {
         gl::ScopedGlslProg shader( mShaderBlur );
         mShaderBlur->uniform( "tex0", 0 ); // use texture unit 0
-
+        
         // tell the shader to blur horizontally and the size of 1 pixel
         mShaderBlur->uniform( "sample_offset", vec2( 1.0f / mFboBlur1->getWidth(), 0.0f ) );
         mShaderBlur->uniform( "attenuation", mBloomEffect );
-
+        
         // copy a horizontally blurred version of our scene into the first blur Fbo
         {
             gl::ScopedFramebuffer fbo( mFboBlur1 );
             gl::ScopedViewport    viewport( 0, 0, mFboBlur1->getWidth(), mFboBlur1->getHeight() );
-
+            
             gl::ScopedTextureBind tex0( mFboScene->getColorTexture(), (uint8_t)0 );
-
+            
             gl::setMatricesWindow( BLUR_SIZE, BLUR_SIZE );
             gl::clear( Color::black() );
-
+            
             gl::drawSolidRect( mFboBlur1->getBounds() );
         }
-
+        
         // tell the shader to blur vertically and the size of 1 pixel
         mShaderBlur->uniform( "sample_offset", vec2( 0.0f, 1.0f / mFboBlur2->getHeight() ) );
         mShaderBlur->uniform( "attenuation", mBloomEffect );
-
+        
         // copy a vertically blurred version of our blurred scene into the second blur Fbo
         {
             gl::ScopedFramebuffer fbo( mFboBlur2 );
             gl::ScopedViewport    viewport( 0, 0, mFboBlur2->getWidth(), mFboBlur2->getHeight() );
-
+            
             gl::ScopedTextureBind tex0( mFboBlur1->getColorTexture(), (uint8_t)0 );
-
+            
             gl::setMatricesWindow( BLUR_SIZE, BLUR_SIZE );
             gl::clear( Color::black() );
-
+            
             gl::drawSolidRect( mFboBlur2->getBounds() );
         }
     }
-//    {
-//        gl::ScopedFramebuffer fbo( mFboScene );
-//        gl::ScopedViewport    viewport( 0, 0, mFboScene->getWidth(), mFboScene->getHeight() );
-//        gl::setMatricesWindow( SCENE_SIZE, SCENE_SIZE );
-//
-//        renderFish();
-//    }
+    //    {
+    //        gl::ScopedFramebuffer fbo( mFboScene );
+    //        gl::ScopedViewport    viewport( 0, 0, mFboScene->getWidth(), mFboScene->getHeight() );
+    //        gl::setMatricesWindow( SCENE_SIZE, SCENE_SIZE );
+    //
+    //        renderFish();
+    //    }
     gl::pushMatrices();
     gl::setMatricesWindow( 800, 800 );
     
@@ -420,8 +532,9 @@ void ImmersiveXsectionApp::draw()
     gl::draw( mFboBlur2->getColorTexture(), Rectf( 0, 0, 800, 800 ) );
     gl::disableAlphaBlending();
     
-    if (mDrawIr && mIrTex) gl::draw(mIrTex);
-    
+    if (mDrawIr && mIrTex) gl::draw(mIrTex, Rectf( 0, 0, 400, 400 ) );
+    if (mDrawFilteredIr && mFilteredTex) gl::draw(mFilteredTex, Rectf( 400, 0, 800, 400 ) );
+    if (mDrawIrBlob && mBlobTex) gl::draw(mBlobTex, Rectf( 0, 400, 400, 800 ) );
     gl::popMatrices();
     mParams->draw();
 }
@@ -495,7 +608,7 @@ void ImmersiveXsectionApp::loadShaders()
         // This being the render glsl, we provide a fragment shader.
         mCausticGlslFormat.vertex( loadAsset( "caustic.vert" ) )
         .fragment( loadAsset( "caustic.frag" ) );
-
+        
         mCausticGlsl = ci::gl::GlslProg::create( mCausticGlslFormat );
     }
     catch( const ci::gl::GlslProgCompileExc &ex ) {
@@ -604,4 +717,4 @@ void ImmersiveXsectionApp::loadBuffers()
     }
 }
 
-CINDER_APP( ImmersiveXsectionApp, RendererGl(RendererGl::Options().msaa(16)), &ImmersiveXsectionApp::prepare )
+CINDER_APP( ImmersiveXsectionApp, RendererGl(RendererGl::Options().msaa(4)), &ImmersiveXsectionApp::prepare )

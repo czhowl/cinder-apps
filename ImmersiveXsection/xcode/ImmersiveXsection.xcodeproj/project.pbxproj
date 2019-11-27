@@ -347,7 +347,58 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
+				OTHER_LDFLAGS = (
+					"\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"",
+					"-lopencv_gapi",
+					"-lopencv_stitching",
+					"-lopencv_aruco",
+					"-lopencv_bgsegm",
+					"-lopencv_bioinspired",
+					"-lopencv_ccalib",
+					"-lopencv_dnn_objdetect",
+					"-lopencv_dnn_superres",
+					"-lopencv_dpm",
+					"-lopencv_highgui",
+					"-lopencv_face",
+					"-lopencv_freetype",
+					"-lopencv_fuzzy",
+					"-lopencv_hfs",
+					"-lopencv_img_hash",
+					"-lopencv_line_descriptor",
+					"-lopencv_quality",
+					"-lopencv_reg",
+					"-lopencv_rgbd",
+					"-lopencv_saliency",
+					"-lopencv_sfm",
+					"-lopencv_stereo",
+					"-lopencv_structured_light",
+					"-lopencv_phase_unwrapping",
+					"-lopencv_superres",
+					"-lopencv_optflow",
+					"-lopencv_surface_matching",
+					"-lopencv_tracking",
+					"-lopencv_datasets",
+					"-lopencv_text",
+					"-lopencv_dnn",
+					"-lopencv_plot",
+					"-lopencv_videostab",
+					"-lopencv_video",
+					"-lopencv_videoio",
+					"-lopencv_xfeatures2d",
+					"-lopencv_shape",
+					"-lopencv_ml",
+					"-lopencv_ximgproc",
+					"-lopencv_xobjdetect",
+					"-lopencv_objdetect",
+					"-lopencv_calib3d",
+					"-lopencv_imgcodecs",
+					"-lopencv_features2d",
+					"-lopencv_flann",
+					"-lopencv_xphoto",
+					"-lopencv_photo",
+					"-lopencv_imgproc",
+					"-lopencv_core",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = ImmersiveXsection;
 				SYMROOT = ./build;
@@ -378,7 +429,58 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
+				OTHER_LDFLAGS = (
+					"\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"",
+					"-lopencv_gapi",
+					"-lopencv_stitching",
+					"-lopencv_aruco",
+					"-lopencv_bgsegm",
+					"-lopencv_bioinspired",
+					"-lopencv_ccalib",
+					"-lopencv_dnn_objdetect",
+					"-lopencv_dnn_superres",
+					"-lopencv_dpm",
+					"-lopencv_highgui",
+					"-lopencv_face",
+					"-lopencv_freetype",
+					"-lopencv_fuzzy",
+					"-lopencv_hfs",
+					"-lopencv_img_hash",
+					"-lopencv_line_descriptor",
+					"-lopencv_quality",
+					"-lopencv_reg",
+					"-lopencv_rgbd",
+					"-lopencv_saliency",
+					"-lopencv_sfm",
+					"-lopencv_stereo",
+					"-lopencv_structured_light",
+					"-lopencv_phase_unwrapping",
+					"-lopencv_superres",
+					"-lopencv_optflow",
+					"-lopencv_surface_matching",
+					"-lopencv_tracking",
+					"-lopencv_datasets",
+					"-lopencv_text",
+					"-lopencv_dnn",
+					"-lopencv_plot",
+					"-lopencv_videostab",
+					"-lopencv_video",
+					"-lopencv_videoio",
+					"-lopencv_xfeatures2d",
+					"-lopencv_shape",
+					"-lopencv_ml",
+					"-lopencv_ximgproc",
+					"-lopencv_xobjdetect",
+					"-lopencv_objdetect",
+					"-lopencv_calib3d",
+					"-lopencv_imgcodecs",
+					"-lopencv_features2d",
+					"-lopencv_flann",
+					"-lopencv_xphoto",
+					"-lopencv_photo",
+					"-lopencv_imgproc",
+					"-lopencv_core",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = ImmersiveXsection;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -400,14 +502,15 @@
 				HEADER_SEARCH_PATHS = (
 					"\"$(CINDER_PATH)/include\"",
 					/Users/howlchen/Documents/source/librealsense/include,
-					"/usr/local/Cellar/opencv/4.1.0_1/include/**",
+					"/usr/local/Cellar/opencv/4.1.2/include/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					/Users/howlchen/Documents/source/librealsense/build,
-					/usr/local/Cellar/opencv/4.1.0_1/lib,
+					/usr/local/Cellar/opencv/4.1.2/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "";
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 			};
@@ -425,13 +528,14 @@
 				HEADER_SEARCH_PATHS = (
 					"\"$(CINDER_PATH)/include\"",
 					/Users/howlchen/Documents/source/librealsense/include,
-					"/usr/local/Cellar/opencv/4.1.0_1/include/**",
+					"/usr/local/Cellar/opencv/4.1.2/include/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					/Users/howlchen/Documents/source/librealsense/build,
-					/usr/local/Cellar/opencv/4.1.0_1/lib,
+					/usr/local/Cellar/opencv/4.1.2/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_LDFLAGS = "";
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 			};
