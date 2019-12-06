@@ -22,7 +22,7 @@
 #define FISH_NUM 50
 #define IR_WIDTH 480
 #define IR_HEIGHT 270
-#define CONNECTIONS false
+#define CONNECTIONS true
 
 using namespace ci;
 using namespace ci::app;
@@ -268,7 +268,7 @@ void ImmersiveXsectionApp::setup()
             console() << "Device: " << dev.getName() << endl;
         
         try {
-            Serial::Device dev = Serial::findDeviceByNameContains( "cu.usbmodem14103" );
+            Serial::Device dev = Serial::findDeviceByNameContains( "cu.usbmodem14603" );
             mSerial = Serial::create( dev, 9600 );
         }
         catch( SerialExc &exc ) {
@@ -279,7 +279,8 @@ void ImmersiveXsectionApp::setup()
 }
 
 void ImmersiveXsectionApp::resize(){
-    
+    mCamUI.setWindowSize( getWindow()->getSize() );
+    mCam.setAspectRatio( getWindow()->getAspectRatio() );
 }
 
 void ImmersiveXsectionApp::mouseDown( MouseEvent event )
@@ -310,13 +311,13 @@ void ImmersiveXsectionApp::update()
     vec2 mouse;
     // -----------
     if(!CONNECTIONS){
-        hideCursor();
+//        hideCursor();
         mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);;
     }else{
         uint8_t b = 0;
         if( mSerial->getNumBytesAvailable() > 0 ) {
             b = mSerial->readByte();
-            console() << b << "_";
+//            console() << b << "_";
             mClick = getElapsedFrames() / 60.0f;
             mPUpdateGlsl->uniform( "Click", mClick);
             mSerial->flush();
