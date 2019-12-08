@@ -29,8 +29,9 @@ uniform float SitB;
 uniform vec2 FishPos[50];
 
 const vec3 green = vec3(0.4, 1.0, 0.0);
-const vec3 red = vec3(3.0, 0.8, 0.2);
-const vec3 blue = vec3(0.0, 2.8, 0.2);
+const vec3 greenB = vec3(0.2, 3.0, 0.0);
+const vec3 red = vec3(3.0, 0.5, 1.8);
+const vec3 blue = vec3(0.0, 0.3, 2.2);
 const vec3 white = vec3(1.0, 1.0, 1.0);
 
 void main() {
@@ -45,10 +46,10 @@ void main() {
 //    Color = vec4(1.0);
 //    Color += vec4(1.0);
     Color += (vec4(green, 1.0) - Color) * 0.05 * smoothstep(0.0, 0.1, length(mA));
-    Color += (vec4((red * (1.0 - SitA)) + (blue * SitA), 1.0) - Color) * smoothstep(0.1, 0.0, length(mA)) * 0.05;
+    Color += (vec4((red * (1.0 - SitA)) + (white * SitA * 5.0), 1.0)) * smoothstep(0.1, 0.0, length(mA)) * 0.05;
     
     Color += (vec4(green, 1.0) - Color) * 0.05 * smoothstep(0.0, 0.1, length(mB));
-    Color += (vec4((red * (1.0 - SitB)) + (blue * SitB), 1.0) - Color) * smoothstep(0.1, 0.0, length(mB)) * 0.05;
+    Color += (vec4((greenB * (1.0 - SitB)) + (white * SitB * 5.0), 1.0)) * smoothstep(0.1, 0.0, length(mB)) * 0.05;
 
     
     vec3 acce;
