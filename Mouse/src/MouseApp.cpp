@@ -38,29 +38,29 @@ void MouseApp::setup()
 		console() << "Device: " << dev.getName() << endl;
 
 	try {
-		Serial::Device dev = Serial::Device("COM5");
+		Serial::Device dev = Serial::Device("cu.usbmodem14603");
 		//Serial::Device dev = Serial::Device("dev/");
-		mSerial = Serial::create(dev, 112500);
+		mSerial = Serial::create(dev, 115200);
 	}
 	catch (SerialExc & exc) {
 		console() << "coult not initialize the serial device " << endl;
 		exit(-1);
 	}
 
-	uint8_t bytes[2] = { 0, 0 };
-	mSerial->writeBytes(bytes, 2);
-	while (true) {
-		if (mSerial->getNumBytesAvailable() > 0){
-			mSerial->readBytes(mBytes, 4);
-			uint16_t pos1 = (mBytes[1] << 8) | mBytes[0];
-			uint16_t pos2 = (mBytes[3] << 8) | mBytes[2];
-			X = pos1;
-			Y = pos2;
-			break;
-		}
+//	uint8_t bytes[2] = { 0, 0 };
+//	mSerial->writeBytes(bytes, 2);
+//	while (true) {
+//		if (mSerial->getNumBytesAvailable() > 0){
+//			mSerial->readBytes(mBytes, 4);
+//			uint16_t pos1 = (mBytes[1] << 8) | mBytes[0];
+//			uint16_t pos2 = (mBytes[3] << 8) | mBytes[2];
+//			X = pos1;
+//			Y = pos2;
+//			break;
+//		}
 		//console() << pos1 << "   " << pos2 << endl;
 		//mSerial->flush();
-	}
+//	}
 }
 
 void MouseApp::mouseDown( MouseEvent event )
@@ -79,8 +79,8 @@ void MouseApp::update()
 		//if (abs(pos2 - Y) < 20) Y = pos2;
 		X = pos1;
 		Y = pos2;
-		//console() << pos1 << "   " << pos2 << endl;
-		//mSerial->flush();
+//		console() << pos1 << "   " << pos2 << endl;
+//		mSerial->flush();
 	}
 }
 

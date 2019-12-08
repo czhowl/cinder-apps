@@ -77,8 +77,10 @@ private:
     int                     mWidth = 2;
     int                     mHeight = 2;
     vec2                        mTester;
-    float                       mSit = 0.0f;
-    float                       mClick = -10.0f;
+    float                       mSitA = 0.0f;
+    float                       mSitB = 0.0f;
+    float                       mClickA = -10.0f;
+    float                       mClickB = -10.0f;
     
     vector<Particle>                    mP;
     
@@ -123,6 +125,14 @@ private:
     
     vec2                        mlastMouse;
     SerialRef                   mSerial;
+    
+    vec2                        mChairA;
+    vec2                        mChairB;
+    vec2                        mLastChairA;
+    vec2                        mLastChairB;
+    
+    vec2                        mTracking[2];
+    bool                        mFirstTrack = true;
 };
 
 void ImmersiveXsectionApp::prepare(Settings *settings)
@@ -192,7 +202,11 @@ void ImmersiveXsectionApp::setup()
         }
     } );
     mParams->addParam( "Sit Threshold", &mSitThresh ).min( 0 ).max( 480 ).step( 1 );
-    
+    mParams->addButton("Switch Chair", [this]{
+        vec2 temp = mTracking[0];
+        mTracking[0] = mTracking[1];
+        mTracking[1] = temp;
+    });
     
     for(int i = 0; i < FISH_NUM; i++){
         mP.push_back(Particle(vec2(randFloat(-0.5, 0.5),randFloat(-0.5, 0.5)), vec2(randFloat(-0.1, 0.1),randFloat(-0.1, 0.1)), 0.13));
@@ -233,7 +247,7 @@ void ImmersiveXsectionApp::setup()
     
     if(CONNECTIONS){
         // -------------------------------- Realsense + OpenCV
-
+        
         rs2::config cfg;
         cfg.enable_stream(RS2_STREAM_INFRARED, IR_WIDTH, IR_HEIGHT, RS2_FORMAT_Y8, 30);
         cfg.enable_stream(RS2_STREAM_DEPTH, IR_WIDTH, IR_HEIGHT, RS2_FORMAT_Z16, 30);
@@ -268,13 +282,16 @@ void ImmersiveXsectionApp::setup()
             console() << "Device: " << dev.getName() << endl;
         
         try {
-            Serial::Device dev = Serial::findDeviceByNameContains( "cu.usbmodem14603" );
+            Serial::Device dev = Serial::findDeviceByNameContains( "cu.usbmodem14503" );
             mSerial = Serial::create( dev, 9600 );
         }
         catch( SerialExc &exc ) {
             console() << "coult not initialize the serial device " << endl;
             exit( -1 );
         }
+        
+        mTracking[0] = vec2(0);
+        mTracking[1] = vec2(0);
     }
 }
 
@@ -285,8 +302,8 @@ void ImmersiveXsectionApp::resize(){
 
 void ImmersiveXsectionApp::mouseDown( MouseEvent event )
 {
-    mClick = getElapsedFrames() / 60.0f;
-    mPUpdateGlsl->uniform( "Click", mClick);
+    mClickA = getElapsedFrames() / 60.0f;
+    mPUpdateGlsl->uniform( "ClickA", mClickA);
 }
 
 void ImmersiveXsectionApp::keyDown( KeyEvent event )
@@ -297,8 +314,6 @@ void ImmersiveXsectionApp::keyDown( KeyEvent event )
             //            mCam.lookAt( vec3( 0, 500, 0 ), vec3( 0, 0, 0 ) );
             break;
         case KeyEvent::KEY_SPACE:
-            mSit = 1.0f - mSit;
-            mPUpdateGlsl->uniform( "Sit",  mSit);
             break;
         default:
             break;
@@ -311,19 +326,26 @@ void ImmersiveXsectionApp::update()
     vec2 mouse;
     // -----------
     if(!CONNECTIONS){
-//        hideCursor();
+        //        hideCursor();
         mouse = vec2(getWindow()->getMousePos().x, getWindow()->getMousePos().y) / vec2(getWindowSize().x, getWindowSize().y);;
     }else{
         uint8_t b = 0;
         if( mSerial->getNumBytesAvailable() > 0 ) {
-            b = mSerial->readByte();
-//            console() << b << "_";
-            mClick = getElapsedFrames() / 60.0f;
-            mPUpdateGlsl->uniform( "Click", mClick);
+            mSerial->readBytes(&b, 1);
+            console() << (int)b << endl;
+            if(b & 0b00000001){
+                mClickA = getElapsedFrames() / 60.0f;
+                mPUpdateGlsl->uniform( "ClickA", mClickA);
+            }
+            if(b & 0b00000010){
+                mClickB = getElapsedFrames() / 60.0f;
+                mPUpdateGlsl->uniform( "ClickB", mClickB);
+            }
             mSerial->flush();
         }
-    // -------------------------------- Camera
-        mouse = mlastMouse;
+        // -------------------------------- Camera
+        mChairA = mLastChairA;
+        mChairB = mLastChairB;
         rs2::frameset fs;
         if (pipe.poll_for_frames(&fs))
         {
@@ -355,30 +377,104 @@ void ImmersiveXsectionApp::update()
             
             if(contours.size() > 0){
                 vector<cv::Rect> boxes;
+                vector<cv::Rect> seats;
                 for( size_t i = 0; i< contours.size(); i++ )
                 {
                     boxes.push_back(boundingRect( contours[i] ));
-                    vec2 center = vec2((boxes[i].x+boxes[i].width/2) / 480.0f, (boxes[i].y+boxes[i].height/2) / 270.0f);
-                    if(boxes[i].width < mSitThresh){
-                        mSit = 1.0f;
-                        mSerial->writeByte(1);
-                    }else{
-                        mSit = 0.0f;
-                        mSerial->writeByte(0);
+                    seats.push_back(boundingRect( contours[i] ));
+                }
+                mSitA = 0.0f;
+                mSitB = 0.0f;
+                if(mFirstTrack && seats.size() == 2){
+                    for( size_t i = 0; i< seats.size(); i++ )
+                    {
+                        mTracking[i] = vec2(1.0f - (seats[i].y+seats[i].height/2) / 270.0f, (seats[i].x+seats[i].width/2) / 480.0f);
                     }
-                    mPUpdateGlsl->uniform( "Sit",  mSit);
-                    if(!isnan(center.x)){
-                        mouse = center;
-                        mlastMouse = mouse;
+                    mFirstTrack = false;
+                }
+                if(seats.size() >= 2){
+                    for( size_t i = 0; i< 2; i++ )
+                    {
+                        float shortestDist = 1.0f;
+                        vec2 chairPos = mTracking[i];
+                        for( size_t j = 0; j< seats.size(); j++ )
+                        {
+                            vec2 newPos = vec2(1.0f - (seats[j].y+seats[j].height/2) / 270.0f, (seats[j].x+seats[j].width/2) / 480.0f);
+                            float dist = distance(newPos, mTracking[i]);
+                            if(dist < shortestDist){
+                                chairPos = newPos;
+                                shortestDist = dist;
+                            }
+                        }
+                        mTracking[i] = chairPos;
                     }
                 }
+                if(seats.size() > 2){
+                    console() << "here?" << endl;
+                    vec2 extraPos;
+                    for( size_t j = 0; j< seats.size(); j++ )
+                    {
+                        vec2 pos = vec2(1.0f - (seats[j].y+seats[j].height/2) / 270.0f, (seats[j].x+seats[j].width/2) / 480.0f);
+                        if(distance(pos, mTracking[0]) != 0.0f && distance(pos, mTracking[1]) != 0.0f){
+                            extraPos = pos;
+                        }
+                    }
+                    float shortestDist = 1.0f;
+                    int sittenChair;
+                    for( size_t i = 0; i< 2; i++ )
+                    {
+                        float dist = distance(extraPos, mTracking[i]);
+                        if(dist < shortestDist){
+                            sittenChair = i;
+                            shortestDist = dist;
+                        }
+                    }
+                    console() << sittenChair << endl;
+                    if(sittenChair == 0){
+                        mSitA = 1.0f;
+                    }else{
+                        mSitB = 1.0f;
+                    }
+                }else if(seats.size() == 1){
+                    vec2 remainPos = vec2(1.0f - (seats[0].y+seats[0].height/2) / 270.0f, (seats[0].x+seats[0].width/2) / 480.0f);
+                    float shortestDist = 1.0f;
+                    int notSittenChair;
+                    for( size_t i = 0; i< 2; i++ )
+                    {
+                        float dist = distance(remainPos, mTracking[i]);
+                        if(dist < shortestDist){
+                            notSittenChair = i;
+                            shortestDist = dist;
+                        }
+                    }
+                    mTracking[notSittenChair] = remainPos;
+                    if(notSittenChair == 0){
+                        mSitB = 1.0f;
+                    }else{
+                        mSitA = 1.0f;
+                    }
+                }
+            }else{
+                mSitA = 1.0f;
+                mSitB = 1.0f;
             }
+            uint8_t byteSent = 0;
+            if(mSitA) byteSent |= 0b00000001;
+            if(mSitB) byteSent |= 0b00000010;
+            mSerial->writeByte(byteSent);
+            mChairA = mTracking[0];
+            mLastChairA = mChairA;
+            mChairB = mTracking[1];
+            mLastChairB = mChairB;
+            mPUpdateGlsl->uniform( "SitA",  mSitA);
+            mPUpdateGlsl->uniform( "SitB",  mSitB);
         }
     }
     // -------------------------------- Scene
     
     vec2 fishPos[FISH_NUM];
-    vec2 chair = mouse - vec2(0.5) + vec2(0.0, -0.025);
+    vec2 chairA = mChairA - vec2(0.5) + vec2(0.0, -0.025);
+    vec2 chairB = mChairB - vec2(0.5) + vec2(0.0, -0.025);
     float time = getElapsedFrames() / 60.0f ;
     // update fishes
     for(int i = 0; i < FISH_NUM; i++){
@@ -387,7 +483,8 @@ void ImmersiveXsectionApp::update()
         mP[i].applyForce(bound * 2.0f);
         //                 ali, sep, coh, aliDist, sepDist, cohDist
         mP[i].flocking(mP, mAlignment, mSeparation, mCohesion, mAlignmentDist, mSeparationDist, mCohesionDist);
-        mP[i].checkGrass(chair, mSit, mClick, time);
+        mP[i].checkGrass(chairA, mSitA, mClickA, time);
+        mP[i].checkGrass(chairB, mSitB, mClickB, time);
         mP[i].update();
         fishPos[i] = mP[i].getPosition();
     }
@@ -408,9 +505,10 @@ void ImmersiveXsectionApp::update()
     
     //    console() << mouse << endl;
     
-    mPUpdateGlsl->uniform( "Mouse",  mouse);
+    mPUpdateGlsl->uniform( "ChairA",  mChairA);
+    mPUpdateGlsl->uniform( "ChairB",  mChairB);
     
-    mPUpdateGlsl->uniform( "FishPos",  (vec2*)fishPos, 30);
+    mPUpdateGlsl->uniform( "FishPos",  (vec2*)fishPos, 50);
     //    mTester = mPerlin.dnoise( 0.0 , getElapsedSeconds()*0.3f)* 0.2f + vec2(0.5f);
     //    mPUpdateGlsl->uniform( "Tester",  mTester);
     // Opposite TransformFeedbackObj to catch the calculated values
@@ -581,8 +679,8 @@ void ImmersiveXsectionApp::loadShaders()
     mPUpdateGlsl->uniform( "H", 1.0f / 60.0f );
     mPUpdateGlsl->uniform( "Accel", vec3( 0.0f ) );
     mPUpdateGlsl->uniform( "ParticleLifetime", 3.0f );
-    mPUpdateGlsl->uniform( "Click",  mClick);
-    mPUpdateGlsl->uniform( "Sit",  mSit);
+    mPUpdateGlsl->uniform( "ClickA",  mClickA);
+    mPUpdateGlsl->uniform( "SitA",  mSitA);
     
     try {
         ci::gl::GlslProg::Format mRenderParticleGlslFormat;

@@ -20,9 +20,12 @@ uniform float H;    // Elapsed time between frames
 uniform vec3 Accel; // Particle Acceleration
 uniform float ParticleLifetime; // Particle lifespan
 //uniform vec2 Tester;
-uniform vec2 Mouse;
-uniform float Click;
-uniform float Sit;
+uniform vec2 ChairA;
+uniform float ClickA;
+uniform float SitA;
+uniform vec2 ChairB;
+uniform float ClickB;
+uniform float SitB;
 uniform vec2 FishPos[50];
 
 const vec3 green = vec3(0.4, 1.0, 0.0);
@@ -37,11 +40,16 @@ void main() {
     Velocity = VertexVelocity;
     Color = VertexColor;
     EndPosition = VertexEndPosition;
-    vec2 m = VertexTexCoord - Mouse;
+    vec2 mA = VertexTexCoord - ChairA;
+    vec2 mB = VertexTexCoord - ChairB;
 //    Color = vec4(1.0);
 //    Color += vec4(1.0);
-    Color += (vec4(green, 1.0) - Color) * 0.05 * smoothstep(0.0, 0.1, length(m));
-    Color += (vec4((red * (1.0 - Sit)) + (blue * Sit), 1.0) - Color) * smoothstep(0.1, 0.0, length(m)) * 0.05;
+    Color += (vec4(green, 1.0) - Color) * 0.05 * smoothstep(0.0, 0.1, length(mA));
+    Color += (vec4((red * (1.0 - SitA)) + (blue * SitA), 1.0) - Color) * smoothstep(0.1, 0.0, length(mA)) * 0.05;
+    
+    Color += (vec4(green, 1.0) - Color) * 0.05 * smoothstep(0.0, 0.1, length(mB));
+    Color += (vec4((red * (1.0 - SitB)) + (blue * SitB), 1.0) - Color) * smoothstep(0.1, 0.0, length(mB)) * 0.05;
+
     
     vec3 acce;
     float multiplier = 2.0 / ( 2.0 * PI );
@@ -54,8 +62,11 @@ void main() {
 //    acce = (curlNoise(vec4((VertexPosition.x * 0.02), (VertexPosition.z * 0.02), Time * 0.005, 0).xyz) + 0) * VertexRandom * 0.1;
     
     
-    acce += vec3(0.0,1000.0,-1000.0) * smoothstep(0.1, 0.0, length(m));
-    acce += smoothstep(1.0, 0.0, Time - Click) * smoothstep(0.1, 0.0, length(m)) * vec3(m.x,0.0,m.y) * 100000.0;
+    acce += vec3(0.0,1000.0,-1000.0) * smoothstep(0.1, 0.0, length(mA));
+    acce += smoothstep(1.0, 0.0, Time - ClickA) * smoothstep(0.1, 0.0, length(mA)) * vec3(mA.x,0.0,mA.y) * 100000.0;
+    
+    acce += vec3(0.0,1000.0,-1000.0) * smoothstep(0.1, 0.0, length(mB));
+    acce += smoothstep(1.0, 0.0, Time - ClickB) * smoothstep(0.1, 0.0, length(mB)) * vec3(mB.x,0.0,mB.y) * 100000.0;
     
     Velocity += acce * H;
     if(length(Velocity) > 200.0) Velocity = 200.0 * normalize(Velocity);
