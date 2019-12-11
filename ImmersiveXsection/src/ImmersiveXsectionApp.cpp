@@ -282,7 +282,7 @@ void ImmersiveXsectionApp::setup()
             console() << "Device: " << dev.getName() << endl;
         
         try {
-            Serial::Device dev = Serial::findDeviceByNameContains( "cu.usbmodem14503" );
+            Serial::Device dev = Serial::findDeviceByNameContains( "cu.usbmodem14403" );
             mSerial = Serial::create( dev, 9600 );
         }
         catch( SerialExc &exc ) {
@@ -332,7 +332,7 @@ void ImmersiveXsectionApp::update()
         uint8_t b = 0;
         if( mSerial->getNumBytesAvailable() > 0 ) {
             mSerial->readBytes(&b, 1);
-            console() << (int)b << endl;
+//            console() << (int)b << endl;
             if(b & 0b00000001){
                 mClickA = getElapsedFrames() / 60.0f;
                 mPUpdateGlsl->uniform( "ClickA", mClickA);
@@ -410,7 +410,7 @@ void ImmersiveXsectionApp::update()
                     }
                 }
                 if(seats.size() > 2){
-                    console() << "here?" << endl;
+//                    console() << "here?" << endl;
                     vec2 extraPos;
                     for( size_t j = 0; j< seats.size(); j++ )
                     {
@@ -429,7 +429,7 @@ void ImmersiveXsectionApp::update()
                             shortestDist = dist;
                         }
                     }
-                    console() << sittenChair << endl;
+//                    console() << sittenChair << endl;
                     if(sittenChair == 0){
                         mSitA = 1.0f;
                     }else{
@@ -462,9 +462,9 @@ void ImmersiveXsectionApp::update()
             if(mSitA) byteSent |= 0b00000001;
             if(mSitB) byteSent |= 0b00000010;
             mSerial->writeByte(byteSent);
-            mChairA = mTracking[0];
+            mChairA = vec2(1.0f - mTracking[0].y, mTracking[0].x);
             mLastChairA = mChairA;
-            mChairB = mTracking[1];
+            mChairB = vec2(1.0f - mTracking[1].y, mTracking[1].x);
             mLastChairB = mChairB;
             mPUpdateGlsl->uniform( "SitA",  mSitA);
             mPUpdateGlsl->uniform( "SitB",  mSitB);

@@ -23,7 +23,7 @@
 		5C636B1F22677C2400E924DC /* librealsense2.2.20.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1B22677C2400E924DC /* librealsense2.2.20.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		5C636B2022677C2400E924DC /* librealsense2.2.20.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1C22677C2400E924DC /* librealsense2.2.20.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		5C636B2122677C2400E924DC /* libusb-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1D22677C2400E924DC /* libusb-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		5C636B2522677C3300E924DC /* librealsense2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C636B1A22677C2300E924DC /* librealsense2.dylib */; };
+		5C636B2522677C3300E924DC /* librealsense2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C636B1A22677C2300E924DC /* librealsense2.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
 		5C636B2622677C3300E924DC /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C636B1D22677C2400E924DC /* libusb-1.0.0.dylib */; };
 		5C636B2722677DD000E924DC /* librealsense2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1A22677C2300E924DC /* librealsense2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		5C636B2922677DD300E924DC /* libusb-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 5C636B1D22677C2400E924DC /* libusb-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };

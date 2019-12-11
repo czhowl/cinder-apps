@@ -48,6 +48,7 @@ void opencvApp::setup()
 	}
 	mCap.set(CAP_PROP_FRAME_WIDTH, WIDTH);
 	mCap.set(CAP_PROP_FRAME_HEIGHT, HEIGHT);
+    mCap.set(CAP_PROP_BUFFERSIZE, 1);
 }
 
 void opencvApp::mouseDown( MouseEvent event )
